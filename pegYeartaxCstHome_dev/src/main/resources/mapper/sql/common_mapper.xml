@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.common.mapper.CommonMapper">
+	
+
+
+
+
+	<select id="findeByBrdCodeWithUrl" resultType="java.lang.String">
+		SELECT A.BRD_CODE
+		  FROM P2Y_CST_BRD_MST A
+		 WHERE UPPER(A.URL) = UPPER(#{ url })
+		   AND A.USE_YN = 'Y'		
+	</select>
+
+
+
+	<select id="findByUserIdAndUserPwd" resultType="userDataVO">
+		SELECT A.CST_ID
+				,(SELECT CST_NM FROM P2T_YT_CST WHERE CST_ID = A.CST_ID) AS CST_NAME
+			  ,A.STR_DT
+			  ,A.END_DT
+			  ,A.COMP_CODE
+			  ,A.COMP_NAME
+			  ,A.USR_ID
+			  ,A.USR_PWD
+			  ,A.USR_CAT
+			  ,A.USR_NAME
+			  ,A.USR_EMAIL
+			  ,A.USR_TEL
+			  ,A.USR_DEPT
+			  ,A.USE_YN
+			  ,A.OFF_TEL
+			  ,A.ETC_03
+			  ,A.ETC_04
+			  ,A.ETC_05
+			  ,B.COMP_ROLE
+		  FROM P2Y_CST_USR A, P2Y_CST_ROL B
+		 WHERE A.CST_ID	   	   = B.CST_ID
+		   AND A.COMP_CODE	   = B.COMP_CODE
+		   AND UPPER(A.USR_ID) = UPPER(#{user_id})
+		   AND A.USR_PWD	   = #{user_pwd}
+		   AND TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') BETWEEN STR_DT AND END_DT
+	</select>
+	
+	
+	<select id="findByCstBrdMst" resultType="boardMstVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_NAME
+			  ,A.BRD_TYPE
+			  ,A.PAGE_SIZE
+			  ,A.RPL_YN
+			  ,A.USE_YN
+			  ,A.PWD_YN
+			  ,A.ATC_YN
+			  ,A.ATC_NUM
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.URL
+			  ,A.DISPLAY_YN
+		  FROM P2Y_CST_BRD_MST A
+		 WHERE A.USE_YN = 'Y'
+	     ORDER BY A.INQ_ORD
+	</select>
+	
+	
+	<select id="findByCdId" resultType="commonVO">
+		SELECT A.CD_ID
+			  ,A.CD
+			  ,A.CD_NM
+			  ,A.LANG_SEQ
+			  ,A.DSC
+			  ,A.MGT_ITEM
+			  ,A.RMK
+			  ,A.USE_YN
+			  ,A.INQ_ORD
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+		  FROM P2T_CD_D A
+		 WHERE A.CD_ID = #{cd_id}
+		   AND A.USE_YN = 'Y'
+		 ORDER BY A.INQ_ORD
+	</select>
+	
+	<select id="findAllByCdId" resultType="commonVO">
+		SELECT A.CD_ID
+			  ,A.CD
+			  ,A.CD_NM
+			  ,A.LANG_SEQ
+			  ,A.DSC
+			  ,A.MGT_ITEM
+			  ,A.RMK
+			  ,A.USE_YN
+			  ,A.INQ_ORD
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+		  FROM P2T_CD_D A
+		 WHERE A.CD_ID IN ( 'C001', 'C002', 'C003', 'C004', 'C007' )
+		   AND A.USE_YN = 'Y'
+		 ORDER BY A.INQ_ORD
+	</select>
+	
+	
+	<!--
+		P2Y_CST_USR 테이블에서 이메일 중복검사
+	-->
+	<select id="countByUsrEmail" resultType="int">
+		SELECT COUNT(*)
+		  FROM P2Y_CST_USR
+		 WHERE USR_EMAIL = #{usrMail}
+	</select>
+	
+	<!--
+		BRD_MST 관련 쿼리
+	-->
+	
+	<select id="findeByBrdCode" resultType="boardMstVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_NAME
+			  ,A.BRD_TYPE
+			  ,A.PAGE_SIZE
+			  ,A.RPL_YN
+			  ,A.USE_YN
+			  ,A.PWD_YN
+			  ,A.ATC_YN
+			  ,A.ATC_NUM
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.URL
+		  FROM P2Y_CST_BRD_MST A
+		 WHERE A.BRD_CODE = #{ brd_code }
+		   AND A.USE_YN	  = 'Y'
+	</select>
+	
+	
+	
+	
+	<!--
+		파일 관련 쿼리
+	-->
+		<select id="findAttachFilesByBrdCodeAndBrdIdx" resultType="attachFileVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_IDX
+			  ,A.FILE_IDX
+			  ,A.ORG_NAME
+			  ,A.ATC_NAME
+			  ,A.ATC_PATH
+			  ,A.ATC_SIZE
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+		  FROM P2Y_CST_FILE A
+		 WHERE A.BRD_CODE = #{ brd_code }
+		   AND A.BRD_IDX  = #{ brd_idx }
+	</select>
+
+
+	<select id="findAttachFilesByBrdCodeAndBrdIdxAndFileIdx" resultType="attachFileVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_IDX
+			  ,A.FILE_IDX
+			  ,A.ORG_NAME
+			  ,A.ATC_NAME
+			  ,A.ATC_PATH
+			  ,A.ATC_SIZE
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+		  FROM P2Y_CST_FILE A
+		 WHERE A.BRD_CODE = #{ brd_code }
+		   AND A.BRD_IDX  = #{ brd_idx }
+		   AND A.FILE_IDX = #{ file_idx }
+	</select>
+	
+	<insert id="insertAttachFileData">
+		<selectKey order="BEFORE" keyProperty="file_idx" resultType="java.lang.Integer">
+			SELECT NVL(MAX(A.FILE_IDX), 0) + 1 
+			  FROM P2Y_CST_FILE A
+			 WHERE A.BRD_CODE = #{ brd_code }
+			   AND A.BRD_IDX  = #{ brd_idx }
+		</selectKey>
+		INSERT INTO P2Y_CST_FILE(
+								 BRD_CODE
+							    ,BRD_IDX
+							    ,FILE_IDX
+							    ,ORG_NAME
+							    ,ATC_NAME
+							    ,ATC_PATH
+							    ,ATC_SIZE
+							    ,ENT_UNO
+							    ,ENT_DTM
+							   )
+					     VALUES(
+								 #{ brd_code }
+							    ,#{ brd_idx }
+							    ,#{ file_idx }
+							    ,#{ org_name }
+							    ,#{ atc_name }
+							    ,#{ atc_path }
+							    ,#{ atc_size }
+							    ,#{ ent_uno }
+							    ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+							   )
+	</insert>
+	
+	<!--
+		개별 파일 삭제
+	-->
+	<delete id="deleteFileByBrdCodeAndBrdIdxAndFileIdx">
+		DELETE FROM P2Y_CST_FILE 
+		 WHERE BRD_CODE = #{brd_code}
+		   AND BRD_IDX = #{brd_idx}
+		   AND FILE_IDX = #{file_idx}
+	</delete>
+	
+	
+	<!--
+		STS 
+	-->
+	
+	<select id="findStsIdxBrdCodeAndBrdIdx"
+			resultType="int">
+		SELECT NVL(MAX(STS_IDX), 0)+1 
+  		  FROM P2Y_CST_STS 
+		 WHERE BRD_CODE = #{brd_code}
+		   AND BRD_IDX = #{brd_idx}
+	</select>
+	<insert id="insertSts">
+		INSERT INTO P2Y_CST_STS(
+								BRD_CODE, 
+								BRD_IDX, 
+								STS_IDX, 
+								BRD_STS, 
+								ENT_UNO
+								)
+						VALUES(
+								#{brd_code}, 
+								#{brd_idx}, 
+								#{sts_idx}, 
+								#{lst_sts}, 
+								#{ent_uno}
+								)
+	</insert>
+	
+	
+	<select id="findUserCountByUsrIdAndUsrName" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM P2Y_CST_USR A
+		 WHERE UPPER(A.USR_ID) = UPPER(#{ usr_id })
+		   AND A.USR_NAME	   = #{ usr_name }
+	</select>
+	
+	
+	<update id="updateUsrPwassword">
+		UPDATE P2Y_CST_USR A
+		   SET A.USR_PWD		= #{ usr_pwd }
+		      ,A.UPD_UNO		= 'INIT'
+		      ,A.UPD_DTM		= TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE UPPER(A.USR_ID)	= UPPER(#{ usr_id })
+		   AND A.USR_NAME		= #{ usr_name }
+	</update>
+	
+	
+	
+</mapper>

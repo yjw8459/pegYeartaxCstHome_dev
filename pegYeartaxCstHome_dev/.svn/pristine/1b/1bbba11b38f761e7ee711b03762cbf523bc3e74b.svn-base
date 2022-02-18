@@ -1,0 +1,24 @@
+package kr.co.pegsystem.board.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.co.pegsystem.board.vo.AttachFileVO;
+import kr.co.pegsystem.board.vo.BoardMstVO;
+import kr.co.pegsystem.board.vo.BoardVO;
+
+@Mapper
+public interface BoardMapper {
+	public List<BoardVO> findByBrdList(Map<String, Object> param);
+	public BoardVO findByBrdCodeAndBrdIdx(Map<String, Object> param);
+	public void insertBoardData(BoardVO boardVO);
+	public int updateBoardData(BoardVO boardVO);
+	public int deleteBoardData(Map<String, Object> param);
+	public int updateHitCount(Map<String, Object> param);
+	public BoardVO findeByBrdCodeAndBrdIdx(Map<String, Object> param);
+	public BoardVO findByBrdCodeAndParentIdx(Map<String, Object> param);
+	public int findByMaxBrdIdxWithBrdCodeAndBrdIdx(String brd_code);
+	public void insertAttachFileData(AttachFileVO attachFileVO);
+}

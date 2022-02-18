@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.member.mapper.MemberMapper">
+	
+
+
+
+
+	<update id="updateMemberData">
+		UPDATE P2Y_CST_USR 
+		   SET USR_NAME	 = #{ usr_name }
+<if test="usr_pwd != null">
+			  ,USR_PWD	 = #{ usr_pwd }
+</if>
+			  ,USR_TEL	 = #{ usr_tel }
+			  ,OFF_TEL	 = #{ off_tel }
+			  ,UPD_UNO	 = #{ upd_uno }
+			  ,UPD_DTM	 = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE USR_ID	 = #{ usr_id }	
+	</update>
+
+
+
+
+
+
+
+
+
+	
+</mapper>

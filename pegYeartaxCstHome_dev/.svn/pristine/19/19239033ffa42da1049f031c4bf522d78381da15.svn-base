@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.admin.mapper.AdminDistMapper">
+	
+	<select id="selectSacYy"
+			resultType="String">
+		SELECT MAX(CD_NM) AS SAC_YY
+		  FROM P2T_CD_D
+		 WHERE CD_ID = #{sac_yy}
+	</select>
+	
+	<select id="selectDistList"
+			resultType="distVO">
+		SELECT CST_ID, SAC_YY, CST_NM, NEW_YN, RMK,
+		       MD001, MD002, MD003, MD004, MD005,
+		       CM001, CM002, CM003, CM004,
+		       SA001, SA002, SA003, SA004,
+			   ET001, ET002
+			   <!--,DD001, DD002-->
+		 FROM P2T_YT_CST_STS
+		where sac_yy = #{sac_yy}
+		 ORDER BY new_yn desc , CST_NM
+	</select>
+</mapper>

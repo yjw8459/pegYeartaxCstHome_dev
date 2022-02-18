@@ -1,0 +1,395 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/common/jstl.jsp" %>
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<link type="text/css" rel="stylesheet" href="${contextPath }/resources/css/basic.css" />
+<link type="text/css" rel="stylesheet" href="${contextPath }/resources/css/yeartaxhelp.css" />
+<link type="text/css" rel="stylesheet" href="${contextPath }/resources/css/jquery-ui.css" />
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/jquery-1.11.1.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/jquery-ui.js"></script>
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/pegs/common.js"></script>
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/pegs/ajaxUtil.js"></script>
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/pegs/messageUtil.js"></script>
+<script type="text/javascript" charset="utf-8" src="${contextPath }/resources/js/dist/js/service/HuskyEZCreator.js"></script>
+<script type="text/javascript" src="${contextPath }/resources/js/pegs/admin/QnAMng.js"></script>
+<script type="text/javascript">
+
+$(function(){
+	// window resize
+	resizeContent();
+	$(window).resize(function() { resizeContent(); });
+})
+
+function fn_save(){
+	oEditors.getById["contentBox"].exec("UPDATE_CONTENTS_FIELD", []);
+	let f = document.boardEditForm;
+	f.action = '/adm/QnA-mng/save';
+	f.method = 'POST';
+	f.submit();
+}
+
+function fn_saveCallback(data){
+	alert(data);
+	location.reload();
+}
+
+function fn_list(){
+	let f = document.conditionForm;
+	f.action = fn_getContextPath() + '/adm/QnA-mng';
+	f.submit();
+}
+
+/**
+ * 진행상태 구분 없이 수정 페이지 이동 시 
+ */
+function fn_adminQnA_editForm(brd_code, brd_idx, lst_sts, ent_uno){
+	location.href = fn_getContextPath() + '/adm/QnA-mng/direct?brd_code=' + brd_code + '&brd_idx=' + brd_idx;
+}
+
+/**
+ * 진행상태에 따른 수정 기능 사용 시 
+ */
+function fn_confirmSts(brd_code, brd_idx, lst_sts, ent_uno){
+	if ( lst_sts == '01' ) {
+		msg = '선택한 문의를 접수 신청 하시겠습니까?';
+		lst_sts = '11';
+	}
+	else if (lst_sts == '11'){
+		msg = '선택한 문의를 접수 취소 하시겠습니까?';
+		lst_sts = '01';
+	}
+ 	else if ( lst_sts == '21' ) {
+		msg = '등록한 답변을 수정하시겠습니까?';
+		lst_sts = '11';
+	} 
+	let data = {
+			'brd_code' : brd_code,
+			'brd_idx' : brd_idx,
+			'lst_sts' : lst_sts,
+			'ent_uno' : ent_uno
+	};
+	let result = confirm(msg);
+	if ( result )	fn_updateSts(data, fn_confirmStsCallback); 
+	
+}
+
+function fn_confirmStsCallback(data){
+	let retCode = data.retCode;
+	let retMsg = data.retMsg
+	alert(retMsg);
+	location.reload();
+}
+
+
+function fn_delete( division, msg ){
+	const result = confirm( msg + '을 삭제하시겠습니까?');
+	if ( ! result ) 	return false;
+	
+	const callback = (result) => {
+		if ( result.retCode > 0 ) {
+			alert('삭제되었습니다.');
+			location.reload();
+		}
+	}
+	
+	let url = fn_getContextPath() + '/adm/QnA-mng/delete';
+	let data = { 'ent_uno' : '${result.question.ent_uno}',
+				 'brd_idx' : '${result.question.brd_idx}',
+				 'state' : division
+	};
+	fn_ajaxPOST(url, data, callback);
+}
+
+function fn_clipCopy(){
+	let dummy = document.createElement("textarea");
+	document.body.appendChild(dummy);
+	const url = window.document.location.href;
+	dummy.value = url;
+	dummy.select();
+	document.execCommand("copy");
+	document.body.removeChild(dummy);
+	alert('URL이 복사되었습니다.');
+}
+
+</script>
+</head>
+<body class="yeartaxHelp_main">
+
+	<div class="mainWrap">
+	
+		<div class="header">`
+			<div class="userFr">
+				<div class="userArea">${sessionScope.userDataVO.usr_id }(${sessionScope.userDataVO.usr_name })</div>
+				<div class="userInfoArea">
+					<div class="userInfo" onclick="fn_modifyUserData();">회원정보변경</div>
+					<div class="userInfo" onclick="fn_logout();">로그아웃</div>
+				</div>
+			</div>
+		</div>
+		<div class="contentsWrap">
+
+<%@ include file="/WEB-INF/jsp/common/left_menu.jsp" %>
+<div class="contents">
+ <div class="topBnr4"></div>
+
+	<div class="cntHeader bgImg4">
+		<div class="title">Q&A</div>
+		<div class="btnWrap">
+			<div class="btn05" title="목록보기" onclick="fn_list();" ></div>
+			<div class="btn01" title="수정하기" onclick="fn_adminQnA_editForm('${result.question.brd_code}','${result.question.brd_idx }',21,'${result.question.ent_uno }');"></div>
+			<div class="btn02" title="주소복사" onclick="fn_clipCopy();"></div>
+		</div>
+	</div>
+	<div class="cntBody">
+		<div class="tblWrap">
+			<table class="tbl_view qna question">
+				<tr>
+					<td colspan="6" class="title">
+						${result.question.subject }
+					</td>
+				</tr>
+				<tr>
+					<th>업무구분</th>
+					<td>${result.question.wrk_cat_name }</td>
+					<th>정산년도</th>
+					<td>${result.question.sac_yy }</td>
+					<th></th>
+					<td></td>
+				</tr>
+				<tr>
+					<th>상세구분</th>
+					<td>${result.question.qst_cat_name }</td>
+					<th>문의방법</th>
+					<td>${result.question.req_cat_name}</td>
+					<th></th>
+					<td></td>
+				</tr>
+				<tr>
+					<th>질문자</th>
+					<td>${result.question.cust_name }</td>
+					<th>사업장</th>
+					<td>${result.question.comp_name }</td>
+					<th>공유여부</th>
+					<td>
+						${result.question.shr_yn_name }
+					</td>
+				</tr>
+				<tr>
+					<th>작성자</th>
+					<td>${result.question.usr_name }</td>
+					<th>작성일시</th>
+					<td colspan="3">
+						<fmt:parseDate value="${result.question.ent_dtm }" pattern="yyyyMMddHHmmss" var="qDate" />
+						<fmt:formatDate value="${qDate }" pattern="yyyy년MM월dd일 HH:mm:ss"/>
+					</td>
+				</tr>
+				<tr>
+					<th>답변자</th>
+					<td>${result.question.answer_name }</td>
+					<th>답변일시</th>
+					<td colspan="3">
+						<fmt:parseDate value="${result.question.answer_dtm }" pattern="yyyyMMddHHmmss" var="aDate" />
+						<fmt:formatDate value="${aDate }" pattern="yyyy년MM월dd일 HH:mm:ss"/>
+					</td>
+				</tr>
+				<tr>
+					<th>질문</th>
+					<td class="textarea" colspan="6">
+						${result.question.question }
+					</td>
+				</tr>
+                <c:if test="${result.questionFiles ne null and fn:length(result.questionFiles) > 0 }">
+				  <tr>
+					<th>첨부</th>
+					<td colspan="6">
+	                    <c:forEach items="${result.questionFiles }" var="attachFile">
+						  <div class="filename">
+							<a href="/brd/download?brd_code=${attachFile.brd_code}&brd_idx=${attachFile.brd_idx}&file_idx=${attachFile.file_idx }">${attachFile.org_name }</a>
+						  </div>
+	                    </c:forEach>
+					</td>
+				 </tr>
+               </c:if>
+			</table>
+			<div class="btnWrap2">
+				<div class="btn04" title="게시글삭제" onclick="fn_delete('ALL', '게시글');"></div>
+			</div>
+		</div>
+		
+	<%-- 	
+        <c:choose>
+          <c:when test="${result.question.lst_sts eq '11' }">
+          <!-- 답글 달기  -->
+          <!-- 답글 달기  -->
+          <!-- 답글 달기  -->
+          <!-- 답글 달기  -->
+           <form id="boardEditForm" name="boardEditForm" action="" enctype="multipart/form-data">
+			 <div class="tblWrap">
+				<table class="tbl_write qna">
+					<tr>
+						<th>제목</th>
+						<td colspan="3">
+                                <c:choose>
+                                	<c:when test="${result.answer.subject eq null }">
+	                        	        <input type="text" name="subject" id="" class="form_write" value="RE : ${result.question.subject }" />
+	                                	<input type="hidden" name="brd_idx" value="${result.question.brd_idx }">
+	                                	<input type="hidden" name="status" value="I">
+	                                </c:when>
+	                                <c:otherwise>
+	                                	<input type="text" name="subject" id="" class="form_write" value="${result.answer.subject }" />
+	                                	<input type="hidden" name="brd_idx" value="${result.answer.brd_idx }">
+	                                	<input type="hidden" name="status" value="U">
+        	                        </c:otherwise>
+                                </c:choose>
+					    </td>
+				   </tr>
+				   <tr> 
+						<th>답변</th>
+						<td colspan="3" class="textarea">
+							<textarea name="content" id="contentBox"  class="write_textarea" >${result.answer.content }</textarea>
+                                <script type="text/javascript">
+                                    	var oEditors = [];
+                             	        nhn.husky.EZCreator.createInIFrame({
+                                    	oAppRef: oEditors,
+                                        elPlaceHolder: "contentBox",
+                                        sSkinURI: "${contextPath}/resources/js/dist/SmartEditor2Skin.html",
+                                        fCreator: "createSEditor2"
+                                        });
+                                </script>
+						</td>
+				  </tr>
+<!-- 					<tr>
+						<th>비고</th>
+						<td>
+							<input type="text" name="remark" value="">
+						</td>
+					</tr> -->
+					<c:if test="${result.answerFiles ne null and fn:length(result.answerFiles) > 0 }">
+							<tr>
+								<th>첨부</th>
+								<td colspan="6">
+						        <c:forEach items="${result.answerFiles }" var="attachFile">
+									<div class="filename">
+										<a href="/brd/download?brd_code=${attachFile.brd_code}&brd_idx=${attachFile.brd_idx}&file_idx=${attachFile.file_idx }">${attachFile.org_name }</a>
+										<button type="button" class="del_savedFile" onclick="fn_deleteFile('${attachFile.brd_code }', '${attachFile.brd_idx }', '${attachFile.file_idx }');">X</button>
+									</div>
+						        </c:forEach>
+								</td>
+							</tr>
+					</c:if>
+					<tr>
+						<th>첨부</th>
+						<td colspan="6" class="inFileCase">
+<!-- 업로드 부분 -->
+							<div class="fileBox">
+								<input type="file" name="attachFiles" class="" />
+<!-- 								<div class="btnFileDel">삭제</div> -->
+								<button type="button" class="btnFileDel">삭제</button>
+							</div>
+
+							<div class="fileBox">
+								<div class="memo">
+									첨부한 파일의 전체 크기는 10Mbyte 미만이어야 합니다.<br>
+									용량이 초과될 경우, 문의 접수가 원활하게 진행되지 않을 수 있습니다.<br>
+									파일첨부는 JPG, GIF, PSD, TIF, MS Office 파일, 아래한글, PDF만 가능합니다.
+								</div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<input type="hidden" name="qna_idx" value="${result.question.brd_idx }">
+			<input type="hidden" name="req_cat" value="${result.question.req_cat }">
+			<input type="hidden" name="cst_id" value="${sessionScope.userDataVO.cst_id }">
+			<input type="hidden" name="ent_uno" value="${sessionScope.userDataVO.usr_id }">
+			<input type="hidden" name="comp_code" value="${sessionScope.userDataVO.comp_code }">
+			<input id="detail_code" type="hidden" name="brd_code" value="${result.question.brd_code }">
+           </form>
+		  </c:when>
+		  <c:when test="${result.question.lst_sts eq '21' || result.question.lst_sts eq '31' }">
+		   --%>
+		   
+		    <div class="tblWrap">
+		    	
+			  <table class="tbl_view qna reply">
+				   <tr>
+					 <td colspan="4" class="title">
+						RE : ${result.question.subject }
+					 </td>
+				   </tr>				
+				   <tr>
+					   <th class="th_A">답변</th>
+					   <td colspan="6" class="textarea">
+						${result.question.answer }
+					   </td>
+				   </tr>
+                   <c:if test="${result.answerFiles ne null and fn:length(result.answerFiles) > 0 }">
+					<tr class="th_a_line">
+						<th class="th_a_bg">첨부</th>
+						<td colspan="6">
+	                         <c:forEach items="${result.answerFiles }" var="attachFile">
+							    <div class="filename">
+									<a href="/brd/download?brd_code=${attachFile.brd_code}&brd_idx=${attachFile.brd_idx}&file_idx=${attachFile.file_idx }">${attachFile.org_name }</a>
+								</div>
+	                         </c:forEach>
+						</td>
+					 </tr>
+                 </c:if>
+			  </table>
+			  <div class="btnWrap3">
+				
+				<div class="btn03" title="답변삭제" onclick="fn_delete('A', '답변');"></div>
+			</div>
+		   </div>
+		   
+<%-- 		   
+		  </c:when>
+        </c:choose>
+         --%>
+        <form name="conditionForm">
+			   <!-- 검색 조건 유지  -->
+			   <input type="hidden" name="sac_yy" 	 value="${condition.sac_yy }">
+			   <input type="hidden" name="wrk_cat" 	 value="${condition.wrk_cat }">
+			   <input type="hidden" name="qst_cat" 	 value="${condition.qst_cat }">
+		   	   <input type="hidden" name="lst_sts" 	 value="${condition.lst_sts }">
+			   <input type="hidden" name="keyword" 	 value="${condition.keyword }">
+			   <input type="hidden" name="from" 	 value="${condition.from }">
+	           <input type="hidden" name="to" 		 value="${condition.to }">
+		       <input type="hidden" name="comp_name" value="${condition.comp_name }">
+			   <input type="hidden" name="page_num"  value="${condition.page_num }">
+			   <!-- 검색 조건 유지  -->
+        </form>
+		   <!-- <div class="tblBtnArea">
+			 <div class="btnBasic list" onclick="fn_list();">목록보기</div>
+			 <!-- <div class="btnBasic reply" onclick="location.href='form_reply.html'">답글</div> -->
+			<%--  진행 단계에 상관없이 수정 될 수 있도록 수정 21.12.17
+			 <c:if test="${result.question.lst_sts eq '21' || result.question.lst_sts eq '31' }">
+			 	<c:if test="${result.answer.ent_uno eq userDataVO.usr_id }">
+			 --%> 	
+			 <!-- 			<div class="btnBasic del" onclick="fn_delete('ALL', '게시글');">게시글 삭제</div>
+			 			<div class="btnBasic del" onclick="fn_delete('A', '답변');">답변 삭제</div>
+				 		<div class="btnBasic del" onclick="fn_adminQnA_editForm('${result.question.brd_code}','${result.question.brd_idx }',21,'${result.question.ent_uno }');">수정</div>
+				 		<div class="btnBasic del" onclick="fn_clipCopy();">URL 복사</div>
+				 		
+				 		
+			<%-- 	 		
+				 </c:if>
+			 </c:if>
+			  
+			 <c:if test="${result.question.lst_sts eq '11' }">
+			 			<div class="btnBasic edit" onclick="fn_save();">작성</div>
+			 			<div class="btnBasic edit" onclick="fn_confirmSts('${result.question.brd_code}','${result.question.brd_idx }','${result.question.lst_sts }','${result.question.ent_uno }');">접수취소</div>
+			 </c:if>
+			 <c:if test="${result.question.lst_sts eq '01' }">
+					 	<div class="btnBasic edit" onclick="fn_confirmSts('${result.question.brd_code}','${result.question.brd_idx }','${result.question.lst_sts }','${result.question.ent_uno }');">접수</div>
+			 </c:if>
+			 --%>
+		   </div>-->
+	</div>
+</div>
+</div>
+</div>
+</body>
+</html>

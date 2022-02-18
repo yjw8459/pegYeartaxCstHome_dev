@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="false" />
+		<setting name="callSettersOnNulls" value="true" />
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	
+
+
+
+	<typeAliases>
+		<typeAlias type="kr.co.pegsystem.common.vo.UserDataVO" alias="userDataVO" />
+		<typeAlias type="kr.co.pegsystem.common.vo.CommonVO" alias="commonVO" />
+		<typeAlias type="kr.co.pegsystem.board.vo.BoardMstVO" alias="boardMstVO" />
+		<typeAlias type="kr.co.pegsystem.board.vo.BoardVO" alias="boardVO" />
+		<typeAlias type="kr.co.pegsystem.qna.vo.QnAVO" alias="QnAVO" />
+		<typeAlias type="kr.co.pegsystem.board.vo.AttachFileVO" alias="attachFileVO" />
+		<typeAlias type="kr.co.pegsystem.admin.vo.StsVO" alias="stsVO" />
+		
+		<typeAlias type="kr.co.pegsystem.admin.vo.BoardMngVO" alias="boardMngVO" />
+		<typeAlias type="kr.co.pegsystem.admin.vo.MemberMngVO" alias="memberMngVO" />
+		<typeAlias type="kr.co.pegsystem.admin.vo.CustomerDataVO" alias="customerDataVO" />
+		<typeAlias type="kr.co.pegsystem.admin.vo.DistributionVO" alias="distVO" />
+<!-- 		<typeAlias type="kr.co.pegsystem.admin.vo.MemberMngVO" alias="memberMngVO" /> -->
+<!-- 		<typeAlias type="kr.co.pegsystem.admin.vo.BoardMngVO" alias="boardMngVO" /> -->
+<!-- 		<typeAlias type="kr.co.pegsystem.admin.vo.QnAMngVO" alias="qnaMngVO" /> -->
+<!-- 		<typeAlias type="java.util.Map" alias="map" /> -->
+<!-- 		<typeAlias type="java.util.HashMap" alias="hashmap" /> -->
+<!-- 		<typeAlias type="kr.co.pegsystem.common.vo.PegMap" alias="pegMap" /> -->
+	</typeAliases>
+	
+	
+	
+	
+</configuration>

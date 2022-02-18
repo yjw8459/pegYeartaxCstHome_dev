@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" debug="true"> 
+	<!--springProfile 태그를 사용하면 logback 설정파일에서 복수개의 프로파일을 설정할 수 있다.--> 
+	<!--<springProfile name="local"> 
+		<property resource="logback-local.properties"/> 
+	</springProfile>-->
+	<!--Environment 내의 프로퍼티들을 개별적으로 설정할 수도 있다.-->
+	<springProperty scope="context" name="log_level" source="logging.level.root" />
+	<!-- log file path --> 
+	<property name="log_path" value="../logs"/>
+		<!-- log file name --> 
+	<property name="log_file_name" value="pegYeartaxCstHome"/>
+	<!-- err log file name --> 
+	<property name="err_log_file_name" value="${log_file_name}_error"/>
+	<!-- pattern --> 
+	<property name="log_pattern" value="%-5level %d{yy-MM-dd HH:mm:ss}[%thread] [%logger{0}:%line] - %msg%n"/>
+		 
+	<!-- Console Appender --> 
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender"> 
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>${log_pattern}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+	</appender>
+	 
+	<!-- File Appender --> 
+	<appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<!-- 파일경로 설정 --> 
+		<file>${log_path}/${log_file_name}.log</file>
+		<!-- 출력패턴 설정--> 
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"> 
+			<pattern>${log_pattern}</pattern>
+			<charset>UTF-8</charset>
+		</encoder>
+		<!-- Rolling 정책 --> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 --> 
+			<fileNamePattern>${log_path}/${log_file_name}.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>5MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+			<!-- 일자별 로그파일 최대 보관주기(~일), 해당 설정일 이상된 파일은 자동으로 제거--> 
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+	</appender>
+	 
+	<!-- 에러의 경우 파일에 로그 처리 -->
+	<appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+		<filter class="ch.qos.logback.classic.filter.LevelFilter"> 
+			<level>error</level>
+ 			<onMatch>accept</onMatch> 
+			<onMismatch>deny</onMismatch> 
+		</filter> 
+		<file>${log_path}/${err_log_file_name}.log</file> 
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"> 
+			<pattern>${log_pattern}</pattern>
+			<charset>UTF-8</charset>
+		</encoder> <!-- Rolling 정책 --> 
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+			<!-- .gz,.zip 등을 넣으면 자동 일자별 로그파일 압축 --> 
+			<fileNamePattern>${log_path}/${err_log_file_name}.%d{yyyy-MM-dd}_%i.log</fileNamePattern> 
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP"> 
+				<maxFileSize>5MB</maxFileSize> 
+			</timeBasedFileNamingAndTriggeringPolicy> 
+			<!-- 일자별 로그파일 최대 보관주기(~일), 해당 설정일 이상된 파일은 자동으로 제거--> 
+			<maxHistory>60</maxHistory>
+		</rollingPolicy> 
+	</appender>
+	 <!-- root레벨 설정 --> 
+	<root level="${log_level}"> 
+		<appender-ref ref="console"/> 
+		<appender-ref ref="file"/> 
+		<appender-ref ref="error"/> 
+	</root> 
+	<!-- 특정패키지 로깅레벨 설정 --> 
+	<logger name="org.apache.ibatis" level="DEBUG" additivity="false"> 
+		<appender-ref ref="console"/> 
+		<appender-ref ref="file"/> 
+		<appender-ref ref="error"/> 
+	</logger> 
+</configuration>

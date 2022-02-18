@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.admin.mapper.AdminMemberMapper">
+	
+
+
+
+
+	<select id="findMemberMngListByKeyword" resultType="memberMngVO">
+		SELECT AAA.*
+		  FROM (
+				SELECT AA.*, COUNT(*) OVER ()AS TOTAL_COUNT
+				  FROM (
+                        SELECT A.CST_ID
+                              ,A.STR_DT
+                              ,A.END_DT
+                              ,A.COMP_CODE
+                              ,A.COMP_NAME
+                              ,A.USR_ID
+                              ,A.USR_PWD
+                              ,A.USR_CAT
+                              ,A.USR_NAME
+                              ,A.USR_EMAIL
+                              ,A.USR_TEL
+                              ,A.USR_DEPT
+                              ,P2F_GET_CDNM('C005', A.USR_DEPT) AS USR_DEPT_NAME
+                              ,A.USE_YN
+                              ,A.OFF_TEL
+                              ,A.ETC_03
+                              ,A.ETC_04
+                              ,A.ETC_05
+                              ,A.ENT_UNO
+                              ,A.ENT_DTM
+                              ,A.UPD_UNO
+                              ,A.UPD_DTM
+                              ,B.CST_NM
+                              ,C.COMP_ROLE
+                              ,ROW_NUMBER() OVER( ORDER BY B.CST_NM, A.COMP_CODE ) AS RN
+                          FROM P2Y_CST_USR A, P2T_YT_CST B, P2Y_CST_ROL C
+                         WHERE A.CST_ID = B.CST_ID
+                           AND A.COMP_CODE = C.COMP_CODE
+                           AND(	  B.CST_NM LIKE '%'||#{ keyword }||'%'
+                           	   OR A.COMP_NAME LIKE '%'||#{ keyword }||'%'
+                           	   OR A.USR_NAME LIKE '%'||#{ keyword }||'%'
+                           	  )
+                         ORDER BY B.CST_NM, A.COMP_CODE
+				  ) AA
+		  ) AAA
+	 WHERE AAA.RN BETWEEN #{ str_num } AND #{ end_num }
+	</select>
+	
+	
+	<update id="updateMemberUseYn">
+		UPDATE P2Y_CST_USR A
+		   SET A.USE_YN	   = #{ use_yn }
+		      ,A.UPD_UNO   = #{ upd_uno }
+		      ,A.UPD_DTM   = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE A.USR_ID	   = #{ usr_id }
+	</update>
+
+
+	<select id="findCustomerMasterData" resultType="customerDataVO">
+		SELECT A.CST_ID
+			  ,A.CST_NM
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.CONNECT_INFO
+			  ,A.WEB_DEP_YN
+			  ,A.DB_DEP_YN
+		  FROM P2T_YT_CST A
+		 ORDER BY A.CST_NM
+	</select>
+
+	
+	<select id="findMemberDataByCstIdAndCompCodeAndUsrId" resultType="memberMngVO">
+	    SELECT A.CST_ID
+	          ,A.STR_DT
+	          ,A.END_DT
+	          ,A.COMP_CODE
+	          ,A.COMP_NAME
+	          ,A.USR_ID
+	          ,A.USR_PWD
+	          ,A.USR_CAT
+	          ,A.USR_NAME
+	          ,A.USR_EMAIL
+	          ,A.USR_TEL
+	          ,A.USR_DEPT
+	          ,A.USE_YN
+	          ,A.OFF_TEL
+	          ,A.ETC_03
+	          ,A.ETC_04
+	          ,A.ETC_05
+	          ,A.ENT_UNO
+	          ,A.ENT_DTM
+	          ,A.UPD_UNO
+	          ,A.UPD_DTM
+	      FROM P2Y_CST_USR A
+		 WHERE A.USR_ID	   = #{ usr_id }
+	</select>	
+	
+
+	<select id="findCustomerDetailByCstId" resultType="customerDataVO">
+		SELECT A.CST_ID
+		      ,A.COMP_CODE
+		      ,A.COMP_NM
+		      ,A.ENT_UNO
+		      ,A.ENT_DTM
+		      ,A.UPD_UNO
+		      ,A.UPD_DTM
+		 FROM P2T_YT_CST_APP A
+		WHERE A.CST_ID = #{ cst_id }
+		  AND TO_CHAR(SYSDATE, 'yyyymmdd') BETWEEN A.STA_DT AND A.END_DT
+   		  AND A.APP_CAT = '01'
+		ORDER BY A.COMP_CODE
+	</select>
+	
+	<select id="findUsrIdCountByUsrId" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM P2Y_CST_USR A
+		 WHERE A.USR_ID = #{ usr_id }
+	</select>
+	
+	
+	<insert id="insertP2yCstUsr">
+		INSERT INTO P2Y_CST_USR (CST_ID
+								,STR_DT
+								,END_DT
+								,COMP_CODE
+								,COMP_NAME
+								,USR_ID
+								,USR_PWD 
+								,USR_CAT
+								,USR_NAME
+								,USR_EMAIL
+								,USR_TEL
+								,OFF_TEL
+								,USR_DEPT
+								,USE_YN
+								,ENT_UNO
+								,ENT_DTM)
+						 VALUES (#{ cst_id }
+						 		,#{ str_dt }
+						 		,#{ end_dt }
+						 		,#{ comp_code }
+						 		,#{ comp_name }
+						 		,#{ usr_id }
+						 		,#{ usr_pwd }
+						 		,#{ usr_cat }
+						 		,#{ usr_name }
+						 		,#{ usr_email }
+						 		,#{ usr_tel }
+						 		,#{ off_tel }
+						 		,#{ usr_dept }
+						 		,'Y'
+						 		,#{ ent_uno }
+						 		,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS'))	
+	</insert>
+	
+	
+	<update id="updateP2yCstUsr">
+		UPDATE P2Y_CST_USR 
+		   SET STR_DT	 = #{ str_dt }
+			  ,END_DT	 = #{ end_dt }
+			  ,COMP_CODE = #{ comp_code }
+			  ,COMP_NAME = #{ comp_name }
+			  ,USR_CAT	 = #{ usr_cat }
+			  ,USR_NAME	 = #{ usr_name }
+			  ,USR_DEPT	 = #{ usr_dept }
+			  ,USR_EMAIL = #{ usr_email }
+			  ,USR_TEL	 = #{ usr_tel }
+			  ,OFF_TEL	 = #{ off_tel }
+			  ,UPD_UNO	 = #{ upd_uno }
+			  ,UPD_DTM	 = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE USR_ID	 = #{ usr_id }
+	</update>
+
+	
+
+	
+</mapper>

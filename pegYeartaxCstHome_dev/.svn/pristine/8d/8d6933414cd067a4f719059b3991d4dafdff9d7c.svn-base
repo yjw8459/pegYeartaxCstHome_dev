@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.admin.mapper.AdminQnAMapper">
+	
+
+<!-- QnA 관리자 -->
+
+ 	<select id="findQnAIdx" 
+ 			resultType="int"> 
+ 		SELECT NVL(MAX(BRD_IDX), 0)+1  
+   		  FROM P2Y_CST_QNA  
+ 	</select> 
+
+
+ 	<select id="findByAdmQnAList" 
+ 			resultType="QnAVO"> 
+		SELECT C.*
+		  FROM (
+				SELECT B.*, COUNT(*) OVER ()AS TOTAL_COUNT, ROWNUM RN
+				  FROM (
+						SELECT A.BRD_CODE
+							  ,A.BRD_IDX
+							  ,A.WRK_CAT
+							  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+							  ,A.QST_CAT
+							  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+							  ,A.REQ_CAT
+							  ,P2F_GET_CDNM('C003', A.REQ_CAT) AS REQ_CAT_NAME
+							  ,A.SAC_YY
+							  ,A.SUBJECT
+							  ,A.QUESTION
+							  ,A.QNA_HIT
+							  ,A.SHR_YN
+							  <!--,A.DEL_YN-->
+							  ,A.CLIENT_IP
+							  ,A.CST_ID
+                              ,A.COMP_CODE
+                              ,A.CUST_ID
+							  ,A.ANSWER_ID
+                              ,TO_CHAR(TO_DATE(A.QNA_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS QNA_DTM
+                              ,A.LST_STS
+                              ,P2F_GET_CDNM('C004', A.LST_STS) AS LST_STS_NAME
+                              ,A.LST_UNO
+							  ,AA.USR_NAME AS ENT_UNO
+							  ,TO_CHAR(TO_DATE(A.ENT_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS ENT_DTM
+							  ,A.UPD_UNO
+							  ,A.UPD_DTM
+							  ,NVL(A.COMP_NAME, AA.COMP_NAME) AS COMP_NAME
+							  ,NVL(A.CUST_NAME, AA.USR_NAME) AS CUST_NAME
+							  ,NVL(A.ANSWER_NAME, '답변자 없음') AS ANSWER_NAME
+							  ,TO_CHAR(TO_DATE(A.ANSWER_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS ANSWER_DTM
+						  FROM P2Y_CST_QNA A, P2Y_CST_USR AA
+						 WHERE A.WRK_CAT LIKE #{ wrk_cat }||'%'
+						   AND A.QST_CAT LIKE #{ qst_cat }||'%'
+						   AND A.SAC_YY LIKE #{ sac_yy }||'%'
+						   AND A.REQ_CAT LIKE #{ req_cat } || '%'
+		<choose>
+			<when test=' lst_sts == "12" '>
+						   AND A.LST_STS IN ( '01', '11' )
+			</when>
+			<otherwise>	
+						   AND A.LST_STS LIKE #{ lst_sts } || '%'
+			</otherwise>
+	 	</choose>
+						   AND ( A.QUESTION LIKE '%'||#{ keyword }||'%' OR A.SUBJECT LIKE '%'||#{ keyword }||'%' )
+						   <!--AND ( ( A.LOGIN_ID = #{usr_id} ) OR ( A.SHR_YN = 'Y' AND A.COMP_CODE = #{comp_code} ) )-->
+						   AND A.COMP_NAME LIKE #{comp_name} || '%' 
+						   AND NVL(A.LST_STS, '41') != '41'
+						   AND A.ENT_UNO = AA.USR_ID
+						   AND A.QNA_DTM BETWEEN #{ from } AND #{ to }
+						   AND A.DEL_YN = #{del_yn}
+						 ORDER BY A.BRD_IDX DESC
+				  ) B
+		  ) C
+	 WHERE C.RN BETWEEN #{ str_num } AND #{ end_num }
+ 	</select> 
+	
+ 	<select id="findQnAByBrdIdx" 
+ 			resultType="QnAVO"> 
+ 		SELECT 	A.*, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.WRK_CAT = CD  
+ 				     AND CD_ID  = 'C001') WRK_CAT_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.LST_STS = CD  
+ 				     AND CD_ID  = 'C004') LST_STS_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.REQ_CAT = CD  
+ 				     AND CD_ID  = 'C003') REQ_CAT_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.QST_CAT = CD  
+ 				     AND CD_ID  = 'C002') QST_CAT_NAME, 
+ 				CASE WHEN SHR_YN = 'Y' THEN '사업장전체' 
+                      ELSE '비공개' 
+                 END SHR_YN_NAME,
+				AA.USR_NAME AS USR_NAME,
+				AA.COMP_NAME AS COMP_NAME
+ 		  FROM 	P2Y_CST_QNA A, P2Y_CST_USR AA
+ 		 WHERE 	A.BRD_IDX = #{brd_idx}  
+		   AND  A.ENT_UNO = AA.USR_ID
+ 	</select> 
+	
+<!-- 	<select id="findQnAByQnAIdx" 
+ 			resultType="QnAVO"> 
+ 		SELECT 	A.*, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.WRK_CAT = CD  
+ 				     AND CD_ID  = 'C001') WRK_CAT_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.LST_STS = CD  
+ 				     AND CD_ID  = 'C004') LST_STS_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.REQ_CAT = CD  
+ 				     AND CD_ID  = 'C003') REQ_CAT_NAME, 
+         		(SELECT CD_NM  
+ 				   FROM P2T_CD_D  
+ 				   WHERE A.QST_CAT = CD  
+ 				     AND CD_ID  = 'C002') QST_CAT_NAME, 
+ 				CASE WHEN SHR_YN = 'Y' THEN '사업장전체' 
+                      ELSE '비공개' 
+                 END SHR_YN_NAME 
+ 		  FROM 	P2Y_CST_QNA A 
+ 		 WHERE 	A.QNA_IDX = #{brd_idx} 
+ 	</select> -->
+	
+<!--	
+ 	<insert id="insertAnswer"> 
+ 		INSERT INTO P2Y_CST_QNA 
+ 		(BRD_CODE, BRD_IDX, WRK_CAT, QST_CAT, REQ_CAT, SAC_YY, SUBJECT,  
+ 		 SHR_YN, COMP_CODE, CST_ID, LOGIN_ID, QNA_IDX, QNA_DTM, ENT_UNO, CONTENT, REMARK) 
+ 		VALUES  
+ 		(#{brd_code}, #{brd_idx}, #{wrk_cat}, #{qst_cat}, #{req_cat}, #{sac_yy}, #{subject}, 'N', 
+ 		 #{comp_code}, #{cst_id}, #{ent_uno}, #{qna_idx}, TO_CHAR(sysdate, 'YYYYMMDD'), #{ent_uno}, #{content}, #{remark}) 
+ 	</insert> 
+-->
+
+<!--
+	관리자 직접등록
+-->
+	<update id="updateDirectQnA">
+		UPDATE P2Y_CST_QNA
+		   SET WRK_CAT 	 = #{wrk_cat},
+			   QST_CAT 	 = #{qst_cat},
+			   SAC_YY 	 = #{sac_yy},
+			   REQ_CAT 	 = #{req_cat},
+			   LST_STS 	 = #{lst_sts},
+			   CST_ID 	 = #{cst_id},
+			   COMP_CODE = #{comp_code},
+			   CUST_ID 	 = #{cust_id},
+			   CST_NAME  = #{cst_name},
+			   COMP_NAME = #{comp_name},
+			   CUST_NAME = #{cust_name},
+			   SUBJECT 	 = #{subject},
+			   QUESTION  = #{question},
+			   ANSWER 	 = #{answer},
+			   UPD_UNO 	 = #{ent_uno},
+			   UPD_DTM 	 = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+<if test=' lst_sts == "21" '>
+			   ,ANSWER_ID = #{ent_uno}
+			   ,ANSWER_NAME = (SELECT USR_NAME FROM P2Y_CST_USR WHERE USR_ID = #{ent_uno})
+			   ,ANSWER_DTM = TO_CHAR(sysdate, 'YYYYMMDDHH24MISS')
+</if>
+		 WHERE BRD_IDX 	 = #{brd_idx}
+	</update>
+
+	
+ 	<update id="updateSts"> 
+ 		UPDATE P2Y_CST_QNA 
+ 		   SET LST_STS = #{lst_sts},
+			   LST_UNO = #{ent_uno}
+ 		 WHERE BRD_CODE = #{brd_code} 
+ 		   AND BRD_IDX = #{brd_idx} 
+ 	</update> 
+	
+	<!--
+		관리자 직접등록 
+		회원찾기 : 회원 목록 조회
+		keyword로 cst, comp, usr 공통 조회 
+	-->
+	<select id="findUsersByKeyword"
+			resultType="memberMngVO">
+		SELECT CST.CST_ID
+		      ,CST.CST_NM
+		      ,CST_D.COMP_CODE
+		      ,CST_D.COMP_NM AS COMP_NAME
+		      ,NVL(USR.USR_ID, 'NULL') AS USR_ID
+		      ,NVL(USR.USR_NAME, '담당자없음') AS USR_NAME
+		  FROM P2T_YT_CST CST 
+		       JOIN P2T_YT_CST_APP CST_D          ON CST.CST_ID = CST_D.CST_ID 
+		       FULL OUTER JOIN P2Y_CST_USR USR ON USR.COMP_CODE = CST_D.COMP_CODE
+		 WHERE 1 = 1
+		   AND TO_CHAR(SYSDATE , 'yyyymmdd') BETWEEN CST_D.STA_DT AND CST_D.END_DT
+		   AND CST_D.APP_CAT = '01'
+		   AND (
+		           CST.CST_NM LIKE '%'||#{keyword}||'%' 
+		        OR CST_D.COMP_NM LIKE '%'||#{keyword}||'%'
+		        OR NVL(USR.USR_NAME, ' ') LIKE '%'||#{keyword}||'%' 
+		       )
+	</select>
+	
+	<update id="deleteQnA">
+		UPDATE P2Y_CST_QNA
+		   SET UPD_UNO = #{ent_uno},
+			   UPD_DTM = TO_CHAR(sysdate, 'YYYYMMDDHH24MISS'),
+	 <choose>
+	  <when test=' state == "ALL"'>
+			   DEL_YN = 'Y'
+	  </when>	
+	  <otherwise>
+			   ANSWER = null
+	  </otherwise>
+	</choose>
+		 WHERE BRD_IDX = #{brd_idx}
+	</update>
+	
+</mapper>

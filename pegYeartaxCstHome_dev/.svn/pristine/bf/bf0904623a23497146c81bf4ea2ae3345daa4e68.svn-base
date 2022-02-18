@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.admin.mapper.AdminBoardMapper">
+	
+
+
+
+
+	<select id="findBoardMngList" resultType="boardMngVO">
+		SELECT AAA.*
+		  FROM (
+				SELECT AA.*, COUNT(*) OVER ()AS TOTAL_COUNT
+				  FROM (
+						SELECT A.BRD_CODE
+							  ,A.BRD_NAME
+							  ,A.BRD_TYPE
+							  ,P2F_GET_CDNM('C008', A.BRD_TYPE) AS BRD_TYPE_NAME
+							  ,A.PAGE_SIZE
+							  ,A.RPL_YN
+							  ,A.USE_YN
+							  ,A.PWD_YN
+							  ,A.ATC_YN
+							  ,A.ATC_NUM
+							  ,A.ENT_UNO
+							  ,A.ENT_DTM
+							  ,A.UPD_UNO
+							  ,A.UPD_DTM
+							  ,A.URL
+							  ,A.INQ_ORD
+							  ,ROW_NUMBER() OVER( ORDER BY A.INQ_ORD ) AS RN
+						  FROM P2Y_CST_BRD_MST A
+						 ORDER BY A.INQ_ORD
+				  		) AA
+		  ) AAA
+	 WHERE AAA.RN BETWEEN #{ str_num } AND #{ end_num }
+	</select>
+	
+	
+	<update id="updateBoardUseYn">
+		UPDATE P2Y_CST_BRD_MST A
+		   SET A.USE_YN	   = #{ use_yn }
+		      ,A.UPD_UNO   = #{ upd_uno }
+		      ,A.UPD_DTM   = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+	</update>
+
+
+	<select id="findBoardMngDataByBrdCode" resultType="boardMngVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_NAME
+			  ,A.BRD_TYPE
+			  ,A.PAGE_SIZE
+			  ,A.RPL_YN
+			  ,A.USE_YN
+			  ,A.PWD_YN
+			  ,A.ATC_YN
+			  ,A.ATC_NUM
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.URL
+			  ,A.INQ_ORD
+		  FROM P2Y_CST_BRD_MST A
+		 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+	</select>
+	
+	
+	<select id="findBrdCodeCountByBrdCode" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		  FROM P2Y_CST_BRD_MST A
+		 WHERE UPPER(A.URL) = UPPER(#{ brd_url })
+	</select>	
+	
+	
+	<select id="findMaxBrdCode" resultType="java.lang.Integer">
+		SELECT NVL(MAX(TO_NUMBER(A.BRD_CODE)), 0)
+		  FROM P2Y_CST_BRD_MST A
+	</select>
+	
+	
+	<insert id="insertP2yCstBrdMst">
+		INSERT INTO P2Y_CST_BRD_MST (BRD_CODE
+									,BRD_NAME
+									,BRD_TYPE
+									,PAGE_SIZE
+									,RPL_YN
+									,USE_YN
+									,PWD_YN
+									,ATC_YN
+									,ATC_NUM
+									,ENT_UNO
+									,ENT_DTM
+									,URL
+									,INQ_ORD)
+							 VALUES (#{ brd_code }
+									,#{ brd_name }
+									,#{ brd_type }
+									,#{ page_size }
+									,'N'
+									,'Y'
+									,'N'
+									,#{ atc_yn }
+									,#{ atc_num }
+									,#{ ent_uno }
+									,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+									,#{ url }
+									,#{ inq_ord })	
+	</insert>
+	
+	
+	<update id="updateP2yCstBrdMst">
+		UPDATE P2Y_CST_BRD_MST
+		   SET BRD_NAME	= #{ brd_name }
+			  ,BRD_TYPE = #{ brd_type }
+			  ,PAGE_SIZE= #{ page_size }
+			  ,ATC_YN	= #{ atc_yn }
+			  ,ATC_NUM	= #{ atc_num }
+			  ,URL		= #{ url }
+			  ,INQ_ORD	= #{ inq_ord }
+			  ,UPD_UNO	= #{ upd_uno }
+			  ,UPD_DTM  = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE UPPER(BRD_CODE) = UPPER(#{ brd_code })
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

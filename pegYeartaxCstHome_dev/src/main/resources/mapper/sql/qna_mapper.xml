@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.qna.mapper.QnAMapper">
+	
+	<select id="countQnA"
+			resultType="int">
+		SELECT NVL(MAX(BRD_IDX), 0)+1 
+  		  FROM P2Y_CST_QNA 
+	</select>
+	
+	<select id="findByQnAList"
+			resultType="QnAVO">
+		SELECT C.*, 
+				(SELECT COUNT(*)
+				   FROM P2Y_CST_FILE
+				  WHERE C.BRD_CODE = BRD_CODE 
+				    AND C.BRD_IDX = BRD_IDX) AS FILE_CNT
+		  FROM (
+				SELECT B.*, COUNT(*) OVER ()AS TOTAL_COUNT, ROWNUM RN
+				  FROM (
+						SELECT A.BRD_CODE
+							  ,A.BRD_IDX
+							  ,A.WRK_CAT
+							  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+							  ,A.QST_CAT
+							  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+							  ,A.REQ_CAT
+							  ,P2F_GET_CDNM('C003', A.REQ_CAT) AS REQ_CAT_NAME
+							  ,A.SAC_YY
+							  ,A.SUBJECT
+							  ,A.QUESTION
+							  ,A.QNA_HIT
+							  ,A.SHR_YN
+							  ,A.DEL_YN
+							  ,A.CLIENT_IP
+							  ,A.CST_ID
+                ,A.COMP_CODE
+                ,A.CUST_ID
+                ,TO_CHAR(TO_DATE(A.QNA_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS QNA_DTM
+                ,A.LST_STS
+                ,P2F_GET_CDNM('C004', A.LST_STS) AS LST_STS_NAME
+                ,A.LST_UNO
+							  ,AA.USR_NAME AS ENT_UNO
+							  ,TO_CHAR(TO_DATE(A.ENT_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS ENT_DTM
+							  ,A.UPD_UNO
+							  ,A.UPD_DTM
+						  FROM P2Y_CST_QNA A, P2Y_CST_USR AA
+						 WHERE A.WRK_CAT LIKE #{wrk_cat}||'%'
+						   AND A.QST_CAT LIKE #{qst_cat}||'%'
+						   AND A.SAC_YY LIKE #{sac_yy}||'%'
+						   AND ( A.QUESTION LIKE '%'||#{ keyword }||'%' OR A.SUBJECT LIKE '%'||#{ keyword }||'%' )
+						   <!--AND ( ( A.LOGIN_ID = #{usr_id} ) OR ( A.SHR_YN = 'Y' AND A.COMP_CODE = #{comp_code} ) )-->
+						   AND A.LST_STS LIKE #{lst_sts} || '%'
+						   AND NVL(A.LST_STS, '41') != '41'
+						   AND A.ENT_UNO = AA.USR_ID
+			<if test= 'shr_yn == "Y"'>
+						   AND ( ( A.COMP_CODE = #{comp_code} AND A.SHR_YN = 'Y' ) OR ( A.CUST_ID = #{usr_id} ) )
+			</if>
+			<if test= 'shr_yn == "N"'>
+						   AND A.CUST_ID = #{usr_id}
+			</if>
+						 ORDER BY A.BRD_IDX DESC
+				  ) B
+		  ) C
+	 WHERE C.RN BETWEEN #{ str_num } AND #{ end_num }
+     
+	</select>
+	
+	<select id="findQnAByBrdIdx" resultType="QnAVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_IDX
+			  ,A.WRK_CAT
+			  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+			  ,A.QST_CAT
+			  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+			  ,A.REQ_CAT
+			  ,P2F_GET_CDNM('C003', A.REQ_CAT) AS REQ_CAT_NAME
+			  ,A.SAC_YY
+			  ,A.SUBJECT
+			  ,A.QNA_HIT
+			  ,A.SHR_YN
+			  ,(CASE WHEN A.SHR_YN = 'Y' THEN '공유'
+					ELSE '공유안함'
+				END) SHR_YN_NAME
+			  ,A.CST_ID
+			  <!--,A.DEL_YN-->
+			  ,A.COMP_CODE
+			  ,A.CUST_ID
+			  ,A.QNA_DTM
+              ,A.LST_STS
+              ,P2F_GET_CDNM('C004', A.LST_STS) AS LST_STS_NAME
+              ,A.LST_UNO
+			  ,A.CLIENT_IP
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.QUESTION
+				,A.ANSWER
+				,A.ANSWER_NAME
+				,A.ANSWER_DTM
+			  ,AA.COMP_NAME
+			  ,AA.USR_NAME
+		  FROM 	P2Y_CST_QNA A,
+				P2Y_CST_USR AA
+		 WHERE A.BRD_IDX = #{ brd_idx }
+		   AND A.ENT_UNO = AA.USR_ID
+	</select>
+	
+		<select id="findStsByBrdIdx"
+			resultType="stsVO">
+		SELECT A.BRD_CODE
+			   ,A.BRD_IDX
+			   ,A.STS_IDX
+			   ,A.BRD_STS
+			   ,P2F_GET_CDNM('C004', A.BRD_STS) AS BRD_STS_NAME
+			   ,TO_CHAR(TO_DATE(A.ENT_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD HH24:MI:SS') AS ENT_DTM
+			   ,(SELECT USR_NAME FROM P2Y_CST_USR WHERE USR_ID = A.ENT_UNO) AS ENT_UNO
+		  FROM P2Y_CST_STS A
+		 WHERE A.BRD_CODE = #{brd_code}
+		   AND A.BRD_IDX = #{brd_idx}
+		 ORDER BY A.STS_IDX DESC
+	</select>
+	
+	
+	<insert id="insertQnA">
+		INSERT INTO P2Y_CST_QNA(
+								BRD_CODE, 
+								BRD_IDX, 
+								WRK_CAT, 
+								QST_CAT, 
+								REQ_CAT, 
+								SAC_YY, 
+								SUBJECT,
+								SHR_YN,
+								CLIENT_IP,
+								CST_ID,
+								COMP_CODE,
+								CUST_ID,
+								QNA_DTM,
+								LST_STS,
+								LST_DTM,
+								ENT_UNO,
+								QUESTION,
+								ANSWER,
+								CST_NAME,
+								COMP_NAME,
+								CUST_NAME
+		<if test=' lst_sts == "21" '>
+								,ANSWER_ID
+								,ANSWER_NAME
+								,ANSWER_DTM
+		</if>
+								)
+						VALUES(
+								#{brd_code},
+								#{brd_idx},
+								#{wrk_cat},
+								#{qst_cat},
+								#{req_cat},
+								#{sac_yy},
+								#{subject},
+								#{shr_yn},
+								#{client_ip},
+								#{cst_id},
+								#{comp_code},
+								#{cust_id},
+								TO_CHAR(sysdate, 'yyyyMMdd'),
+								#{lst_sts},
+								TO_CHAR(sysdate, 'yyyyMMdd'),
+								#{ent_uno},
+								#{question},
+								#{answer},
+								#{cst_name},
+								#{comp_name},
+								#{cust_name}
+		<if test=' lst_sts == "21" '>
+								,#{ent_uno}
+								,(SELECT USR_NAME FROM P2Y_CST_USR WHERE USR_ID = #{ent_uno})
+								,TO_CHAR(sysdate, 'YYYYMMDDHH24MISS')
+		</if>
+						)
+	</insert>
+	
+	
+	<update id="updateQnA">
+		UPDATE 	P2Y_CST_QNA 
+		   SET 	SUBJECT = #{subject},
+				QUESTION = #{question},
+				SHR_YN = #{shr_yn},
+				SAC_YY = #{sac_yy},
+				WRK_CAT = #{wrk_cat},
+				REQ_CAT = #{req_cat},
+				QST_CAT = #{qst_cat},
+				UPD_DTM = TO_CHAR(sysdate, 'yyyyMMddHHmm'),
+				UPD_UNO = #{ent_uno}
+		 WHERE	BRD_IDX = #{brd_idx}
+	</update>
+	
+	<update id="updateQnAHitCount">
+		UPDATE P2Y_CST_QNA
+		   SET QNA_HIT = NVL(QNA_HIT, 0) +1
+		 WHERE BRD_CODE = #{brd_code}
+		   AND BRD_IDX = #{brd_idx}
+	</update>
+	
+	<delete id="deleteQnAData">
+		UPDATE P2Y_CST_QNA
+		   SET LST_STS = '41',
+			   LST_DTM = TO_CHAR(sysdate, 'YYYYMMDD'),
+			   LST_UNO = #{ent_uno},
+			   UPD_UNO = #{ent_uno},
+			   UPD_DTM = TO_CHAR(sysdate, 'yyyyMMddHHmm')
+		 WHERE BRD_CODE = #{brd_code}
+		   AND BRD_IDX = #{brd_idx}
+	</delete>
+</mapper>

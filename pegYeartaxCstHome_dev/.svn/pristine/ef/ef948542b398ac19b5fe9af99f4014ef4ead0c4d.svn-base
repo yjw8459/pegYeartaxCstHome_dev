@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.co.pegsystem.board.mapper.BoardMapper">
+	
+
+
+
+
+	<select id="findByBrdList" resultType="boardVO">
+		SELECT C.*
+		  FROM (
+				SELECT B.*, COUNT(*) OVER ()AS TOTAL_COUNT
+				  FROM (
+						SELECT A.BRD_CODE
+							  ,A.BRD_IDX
+							  ,A.WRK_CAT
+							  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+							  ,A.QST_CAT
+							  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+							  ,A.SAC_YY
+							  ,A.BRD_GROUP
+							  ,A.BRD_STEP
+							  ,A.BRD_LEVEL
+							  ,A.SUBJECT
+							  ,A.CONTENT
+							  ,A.BRD_PWD
+							  ,A.BRD_HIT
+							  ,A.NTC_YN
+							  ,A.DEL_YN
+							  ,A.CLIENT_IP
+							  ,A.ETC_01
+							  ,A.ETC_02
+							  ,A.ETC_03
+							  ,A.ETC_04
+							  ,A.ETC_05
+							  ,(SELECT COUNT(*) FROM P2Y_CST_FILE ATTACH WHERE ATTACH.BRD_CODE = A.BRD_CODE AND ATTACH.BRD_IDX = A.BRD_IDX) AS ATTACH_COUNT
+							  ,USR.USR_NAME AS ENT_UNO
+							  ,TO_CHAR(TO_DATE(A.ENT_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS ENT_DTM
+							  ,A.UPD_UNO
+							  ,A.UPD_DTM
+							  ,ROW_NUMBER() OVER( ORDER BY BRD_GROUP DESC, BRD_STEP ) AS RN
+						  FROM P2Y_CST_BRD A, P2Y_CST_USR USR
+						 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+						   AND A.WRK_CAT LIKE #{ wrk_cat }||'%'
+						   AND A.QST_CAT LIKE #{ qst_cat }||'%'
+						   AND A.SAC_YY LIKE #{ sac_yy }||'%'
+						   AND ( A.CONTENT LIKE '%'||#{ keyword }||'%' OR A.SUBJECT LIKE '%'||#{ keyword }||'%' )
+						   AND NVL(A.DEL_YN, 'N') = 'N'
+						   AND A.ENT_UNO = USR.USR_ID
+						 ORDER BY A.NTC_YN DESC, A.BRD_IDX DESC
+				  ) B
+		  ) C
+	 WHERE C.RN BETWEEN #{ str_num } AND #{ end_num }
+	</select>
+	
+	
+	<select id="findByBrdCodeAndBrdIdx" resultType="boardVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_IDX
+			  ,A.WRK_CAT
+			  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+			  ,A.QST_CAT
+			  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+			  ,A.SAC_YY
+			  ,A.BRD_GROUP
+			  ,A.BRD_STEP
+			  ,A.BRD_LEVEL
+			  ,A.SUBJECT
+			  ,A.BRD_PWD
+			  ,A.BRD_HIT
+			  ,A.NTC_YN
+			  ,A.DEL_YN
+			  ,A.CLIENT_IP
+			  ,A.ETC_01
+			  ,A.ETC_02
+			  ,A.ETC_03
+			  ,A.ETC_04
+			  ,A.ETC_05
+			  ,A.ENT_UNO
+			  ,A.ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+			  ,A.CONTENT
+		  FROM P2Y_CST_BRD A
+		 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+		   AND A.BRD_IDX = #{ brd_idx }
+	</select>
+	
+	
+	<insert id="insertBoardData">
+		INSERT INTO P2Y_CST_BRD(
+								BRD_CODE
+							   ,BRD_IDX
+							   ,WRK_CAT
+							   ,QST_CAT
+							   ,SAC_YY
+							   ,BRD_GROUP
+							   ,BRD_STEP
+							   ,BRD_LEVEL
+							   ,SUBJECT
+							   ,CONTENT
+							   ,BRD_PWD
+							   ,BRD_HIT
+							   ,NTC_YN
+							   ,CLIENT_IP
+							   ,ETC_01
+							   ,ETC_02
+							   ,ETC_03
+							   ,ETC_04
+							   ,ETC_05
+							   ,ENT_UNO
+							   ,ENT_DTM
+							   )
+					     VALUES(
+					     		#{ brd_code }
+							   ,#{ brd_idx }
+							   ,#{ wrk_cat }
+							   ,#{ qst_cat }
+							   ,#{ sac_yy }
+							   ,#{ brd_group }
+							   ,#{ brd_step }
+							   ,#{ brd_level }
+							   ,#{ subject }
+							   ,#{ content }
+							   ,#{ brd_pwd }
+							   ,0
+							   ,#{ ntc_yn }
+							   ,#{ client_ip }
+							   ,#{ etc_01 }
+							   ,#{ etc_02 }
+							   ,#{ etc_03 }
+							   ,#{ etc_04 }
+							   ,#{ etc_05 }
+							   ,#{ ent_uno }
+							   ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+							   )
+	</insert>
+	
+	
+	<update id="updateBoardData">
+		UPDATE P2Y_CST_BRD
+		   SET WRK_CAT	 = #{ wrk_cat }
+			  ,QST_CAT	 = #{ qst_cat }
+			  ,SAC_YY	 = #{ sac_yy }
+			  ,SUBJECT 	 = #{ subject }
+			  ,CONTENT 	 = #{ content }
+			  ,BRD_PWD 	 = #{ brd_pwd }
+			  ,UPD_UNO 	 = #{ ent_uno }
+			  ,UPD_DTM 	 = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE BRD_CODE  = #{ brd_code }
+		   AND BRD_IDX 	 = #{ brd_idx }
+	</update>
+	
+	
+	<update id="deleteBoardData">
+		UPDATE P2Y_CST_BRD
+		   SET DEL_YN 	 = 'Y'
+			  ,UPD_UNO 	 = #{ usr_id }
+			  ,UPD_DTM 	 = TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
+		 WHERE BRD_CODE  = #{ brd_code }
+		   AND BRD_IDX 	 = #{ brd_idx }
+	</update>
+	
+	
+	<update id="updateHitCount">
+		UPDATE P2Y_CST_BRD
+		   SET BRD_HIT 	 = NVL(BRD_HIT, 0) + 1
+		 WHERE BRD_CODE  = #{ brd_code }
+		   AND BRD_IDX 	 = #{ brd_idx }
+	</update>
+
+
+	<select id="findeByBrdCodeAndBrdIdx" resultType="boardVO">
+		SELECT A.BRD_CODE
+			  ,A.BRD_IDX
+			  ,A.WRK_CAT
+			  ,P2F_GET_CDNM('C001', A.WRK_CAT) AS WRK_CAT_NAME
+			  ,A.QST_CAT
+			  ,P2F_GET_CDNM('C002', A.QST_CAT) AS QST_CAT_NAME
+			  ,A.SAC_YY
+			  ,A.BRD_GROUP
+			  ,A.BRD_STEP
+			  ,A.BRD_LEVEL
+			  ,A.SUBJECT
+			  ,A.CONTENT
+			  ,A.BRD_PWD
+			  ,A.BRD_HIT
+			  ,A.NTC_YN
+			  ,A.DEL_YN
+			  ,A.CLIENT_IP
+			  ,A.ETC_01
+			  ,A.ETC_02
+			  ,A.ETC_03
+			  ,A.ETC_04
+			  ,A.ETC_05
+			  ,USR.USR_NAME AS ENT_UNO
+			  ,TO_CHAR(TO_DATE(A.ENT_DTM, 'YYYYMMDDHH24MISS'), 'YYYY.MM.DD') AS ENT_DTM
+			  ,A.UPD_UNO
+			  ,A.UPD_DTM
+		  FROM P2Y_CST_BRD A, P2Y_CST_USR USR
+		 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+		   AND A.BRD_IDX = #{ brd_idx }
+		   AND NVL(A.DEL_YN, 'N') = 'N'
+		   AND A.ENT_UNO = USR.USR_ID
+	</select>
+
+
+	<select id="findByBrdCodeAndParentIdx" resultType="boardVO">
+		SELECT NVL(A.BRD_GROUP, 0) BRD_GROUP
+			  ,NVL(A.BRD_STEP, 0) BRD_STEP
+			  ,NVL(A.BRD_LEVEL, 0) BRD_LEVEL
+  		  FROM P2Y_CST_BRD A
+		 WHERE UPPER(A.BRD_CODE) = UPPER(#{ brd_code })
+		   AND A.BRD_IDX = #{ parent_no }
+	</select>
+
+
+	<select id="findByMaxBrdIdxWithBrdCodeAndBrdIdx" resultType="java.lang.Integer">
+		SELECT NVL(MAX(BRD_IDX), 0) + 1
+		  FROM P2Y_CST_BRD
+		 WHERE BRD_CODE = #{ brd_code }	
+	</select>
+
+	
+
+
+
+
+
+
+
+
+	
+</mapper>

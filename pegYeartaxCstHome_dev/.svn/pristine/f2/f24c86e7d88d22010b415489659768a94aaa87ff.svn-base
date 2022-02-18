@@ -1,0 +1,441 @@
+@charset "utf-8";
+@import "reset.css";
+
+/* /////////////////////////////////////////
+	=basic style
+///////////////////////////////////////// */
+
+*, *::before, *::after{ -webkit-box-sizing:border-box;-moz-box-sizing:border-box;-o-box-sizing:border-box;-ms-box-sizing:border-box;box-sizing:border-box }
+body, table, input, select, a, div, textarea, li{ font-family:'MalgunGothic', sans-serif }
+p, table{ margin:0 }
+input[type=text].date,
+input[type=text].datepicker,
+input[type=text].hasDatepicker { text-align:center;padding-left:0;padding-right:0 }
+body{ margin:0;padding:0;position:relative }
+body.yeartaxHelp_main{ overflow:hidden }
+body.yeartaxHelp_login{ background:url(../images/yeartax_help/white_bk_700px.png) repeat-y center top #F5F5F5 }
+
+/* Chrome, Safari용 스크롤 바 */
+::-webkit-scrollbar { width:17px; height:17px }
+::-webkit-scrollbar-button:start:decrement 	{ display:block;height:34px;background:url(../images/scrollbar/scrollbar_start.png) no-repeat left top }
+::-webkit-scrollbar-button:end:increment  	{ display:block;height:34px;background:url(../images/scrollbar/scrollbar_end.png) no-repeat left top }
+::-webkit-scrollbar-button:start:decrement:horizontal	{ display:block;width:34px;height:17px;background:url(../images/scrollbar/scrollbar_start_horizontal.png) no-repeat left top  }
+::-webkit-scrollbar-button:end:increment:horizontal	{ display:block;width:34px;height:17px;background:url(../images/scrollbar/scrollbar_end_horizontal.png) no-repeat right top }
+::-webkit-scrollbar-track { background:#F0F0F0 }
+::-webkit-scrollbar-track:horizontal{ border-bottom:0}
+::-webkit-scrollbar-thumb { height:49px;width:50px;background:#CDCDCD }
+::-webkit-scrollbar-corner{ background:#F0F0F0 }
+
+table{ font-size:13px }
+input[type=password],
+input[type=text]{ float:left;padding:0 0 0 7px;margin-right: 10px;height:40px;font-size:13px;border:1px solid #D0D0D0;border-radius:0;/*border-bottom:1px solid #D0D0D0*/}
+input[type=number]{ float:left;padding:0 0 0 7px;height:40px;font-size:13px;border:0;border-radius:0;border-bottom:1px solid #E6E6E6 }
+select{ float:left;width:100%;font-size:13px;height:25px;border:1px solid #E6E6E6 }
+
+/* /////////////////////////////////////////
+	=common style
+///////////////////////////////////////// */
+
+/* //////////////
+  = 로그인
+////////////// */
+.windowWrap{ float:left;width:100%;text-align:center }
+.contentWrap{ display:inline-block;width:700px;background:url(../images/yeartax_help/hp_login_logo.png) no-repeat center 82px }
+.loginBox{ float:left;width:478px;margin:290px 0 0 110px;border:1px solid #E5E5E5;padding:130px 0 68px 70px;background:url(../images/yeartax_help/login_title.png) no-repeat 70px 57px #FFF }
+.loginBox input[type=text].hp_id{ width:338px;height:51px;border-bottom:2px solid #EBEBEB;font-weight:bold;font-size:14px }
+.loginBox input[type=password].hp_pw{ width:338px;height:51px;border-bottom:2px solid #EBEBEB;font-weight:bold }
+.loginBox .saveidBox{ float:right;margin:5px 74px 0 0 }
+.loginBox .saveidBox input[type=checkbox]{ float:left;width:14px;height:14px;margin:3px 6px 3px 4px;cursor:pointer }
+.loginBox .saveidBox label{ float:left;font-size:13px;font-weight:bold;cursor:pointer }
+input:-internal-autofill-selected{ background:#FFF!important }
+.hp_btn{ float:left;width:167px;height:50px;padding:14px 0 0 0;border-radius:3px;font-weight:bold;text-align:center;font-size:14px;letter-spacing:-1px;cursor:pointer }
+.hp_btn.login{ width:334px;background:#FEE500;margin:34px 0 0 0 }
+.hp_btn.pwReset{ background:#F6F6F6;margin:0 4px 0 0 }
+.hp_btn.joinRequest{ background:#F6F6F6 }
+.hp_btn.login:hover, .hp_btn.login:focus{ background:#FED700 }
+.hp_btn.pwReset:hover, .hp_btn.pwReset:focus,
+.hp_btn.joinRequest:hover, .hp_btn.joinRequest:focus{ background:#E7E7E7 }
+.btw{ float:left;width:338px;height:48px;background:url(../images/yeartax_help/btw.png) no-repeat }
+
+/* //////////////
+  = 비밀번호 초기화 
+////////////// */
+.pwResetBox{ float:left;width:478px;margin:290px 0 0 110px;border:1px solid #E5E5E5;padding:130px 0 68px 70px;background:url(../images/yeartax_help/pwreset_title.png) no-repeat 70px 57px #FFF }
+.pwResetBox input[type=text].hp_id, .pwResetBox input[type=text].hp_name,
+.pwResetBox input[type=text].hp_email{ width:338px;height:51px;border-bottom:2px solid #EBEBEB;font-weight:bold }
+
+
+
+/* //////////////
+  = 로딩 이미지
+////////////// */
+.loading{ display:none;width:100%;height:100%;position:absolute;top:0;left:0;z-index:999;background:url(../images/yeartax_help/opacity_50.png)  }
+.loading:before { content:'';position:absolute;width:150px;height:150px;border:1px solid #88B7CC;background:url(../images/yeartax_help/loader_backinout.gif) no-repeat;top:35%;left:45% }
+
+
+
+/* ////////////////////////////
+  = Header background images
+//////////////////////////// */
+
+.bgImg1{background:url(../images/yeartax_help/bg_img_1.png) no-repeat 100% }
+.bgImg2{background:url(../images/yeartax_help/bg_img_2.png) no-repeat 100% }
+.bgImg3{background:url(../images/yeartax_help/bg_img_3.png) no-repeat 100% }
+.bgImg4{background:url(../images/yeartax_help/bg_img_4.png) no-repeat 100%; position:relative;}
+.bgImg5{background:url(../images/yeartax_help/bg_img_5.png) no-repeat 100% }
+.bgImg6{background:url(../images/yeartax_help/bg_img_6.png) no-repeat 100% }
+.bgImg7{background:url(../images/yeartax_help/bg_img_7.png) no-repeat 100% }
+.bgImg8{background:url(../images/yeartax_help/bg_img_8.png) no-repeat 100% }
+
+/*  ////// topBnr //////  */
+.topBnr{ width:100%; height:100px; margin:20px 0; background:url(../images/yeartax_help/bg1_test.png) no-repeat 100%;}
+.topBnr2{ width:100%; height:100px; margin:20px 0; background:url(../images/yeartax_help/bg2_test.png) no-repeat 100%;}
+.topBnr3{ width:100%; height:100px; margin:20px 0; background:url(../images/yeartax_help/bg3_test.png) no-repeat 100%;}
+.topBnr4{ width:100%; height:100px; margin:20px 0; background:url(../images/yeartax_help/bg4_test.png) no-repeat 100%;}
+
+
+
+
+/* //////////////
+  = MAIN
+////////////// */
+.mainWrap{ float:left;width:100%;background:url(../images/yeartax_help/div_line.png) repeat-y 209px 0 #FFF;position:relative }
+.mainWrap .header{ position:absolute;width:100%;height:96px;padding:28px 0 0 0;background:url(../images/yeartax_help/hp_header_logo.png) no-repeat 30px 34px #F5F5F5;border-bottom:1px solid #E0E0E0 }
+.mainWrap .header .userFr{ float:right;margin:0 40px 0 0 }
+.mainWrap .header .userArea{ float:left;height:41px;font-size:14px;font-weight:bold;background:url(../images/yeartax_help/user_img.png) no-repeat 0 7px;padding:10px 0 0 40px;cursor:default }
+.mainWrap .header .userArea:hover, .mainWrap .header .userArea:focus{ background:url(../images/yeartax_help/user_img_ov.png) no-repeat 0 7px;color:#F37800 }	
+.mainWrap .header .userInfoArea{ float:left;width:244px;height:41px;border:1px solid #FF9C00;padding:9px 22px 0 22px;margin:0 0 0 50px }
+.mainWrap .header .userInfoArea .userInfo{ float:left;font-size:14px;font-weight:bold;color:#F37800;letter-spacing:-1px;position:relative;cursor:pointer }
+.mainWrap .header .userInfoArea .userInfo:first-child{ margin:0 63px 0 0 }
+.mainWrap .header .userInfoArea .userInfo:first-child:after{ content:'';position:absolute;width:1px;height:15px;background:#FF9C00;right:-32px;top:3px }
+.mainWrap .header .userInfoArea .userInfo:hover, .mainWrap .header .userInfoArea .userInfo:focus{ color:#000 }
+
+.mainWrap .contentsWrap{ position:absolute;width:100%;overflow:auto;top:96px }
+.mainWrap .contentsWrap .leftMenuWrap{ position:absolute;width:230px }
+.leftMenuWrap ul.leftM{ float:left;margin:56px 0 0 28px }
+.leftMenuWrap ul.leftM li{ float:left;width:100%;height:33px;font-size:15px;font-weight:bold;letter-spacing:-1px;cursor:pointer }
+.leftMenuWrap ul.leftM li.preM{ margin:0 0 20px 0;padding:5px 0 0 13px }
+.leftMenuWrap ul.leftM li.soM{ margin:0 0 15px 0;padding:0 0 0 31px;font-weight:normal;position:relative }
+.leftMenuWrap ul.leftM li.soM:before{ position:absolute;content:'';width:5px;height:2px;background:#888;left:15px;top:11px }
+.leftMenuWrap ul.leftM li.soM:hover:before, .leftMenuWrap ul.leftM li.soM:focus:before{ background:#508CF7 }
+.leftMenuWrap ul.leftM li.preM.ov{ color:#FFF;background:url(../images/yeartax_help/bk_leftmenu_ov.png) no-repeat }
+.leftMenuWrap ul.leftM li:hover, .leftMenuWrap ul.leftM li:focus{ color:#508CF7 }
+.leftMenuWrap ul.leftM li.soM.ov{ color:#508CF7;font-weight:bold }
+.leftMenuWrap ul.leftM li.soM.ov:before, .leftMenuWrap ul.leftM li.soM.ov:before{ background:#508CF7 }
+.mainWrap .contentsWrap .contents{ width:1200px;margin:0 auto;padding:0 0 0 40px;/*background:#FFF*/ }
+.searchArea{ float:left;width:100%;border-bottom:1px solid #E4E5E7;padding:25px 0 12px 0  }
+table.tblSerach{ float:left;width:100%;font-size:14px; }
+table.tblSerach tr th{ width:129px;height:38px;text-align:right;padding:0 10px 0 0;font-weight:bold }
+table.tblSerach tr td{ width:257px;padding:0 0 0 10px }
+table.tblSerach tr td input[type=checkbox].onlyMyBrd{ float:left;width:15px;height:15px;margin:3px 3px 3px 4px;cursor:pointer }
+table.tblSerach input[type=text]{ float:left;height:34px;border:1px solid #E6E6E6 }
+table.tblSerach input[type=text].date{ width:90px;padding:1px 0 2px 0px;text-align:center }
+table.tblSerach .wave{ float:left;width:20px;height:34px;text-align:center;font-size:14px;font-weight:bold;padding:3px 0 0 0 }
+table.tblSerach select{ float:left;width:201px;height:34px;font-size:13px; }
+table.tblSerach input[type=text].keyword{ float:left;width:201px;height:34px;border:1px solid #E6E6E6 }
+table.tblSerach.memList tr td{  }
+table.tblSerach.memList select{ width:150px;margin:0 5px 0 0 }
+table.tblSerach.memList input[type=text].keyword{ width:400px }
+table.tblSerach.memList .searchBtnArea{ margin:0 }
+table.tblSerach.memList .searchBtnArea .hp_btnSearch{ float:left }
+
+/* search Area */
+#searchArea{display:none;}
+
+.searchBtnArea{ float:left;width:100%;text-align:center;margin:18px 0 0 0 }
+.searchBtnArea .hp_btnSearch{ display:inline-block;width:151px;height:38px;background:url(../images/yeartax_help/btn_search.png) no-repeat }
+.searchBtnArea .hp_btnReset{ display:inline-block;width:151px;height:38px;background:url(../images/yeartax_help/btn_reset.png) no-repeat }
+.searchBtnArea .hp_btnSearch:hover, .searchBtnArea .hp_btnSearch:focus{ background:url(../images/yeartax_help/btn_search_ov.png) no-repeat;cursor:pointer }
+.searchBtnArea .hp_btnReset:hover, .searchBtnArea .hp_btnReset:focus{ background:url(../images/yeartax_help/btn_reset_ov.png) no-repeat;cursor:pointer }
+
+.cntHeader{ float:left;width:100%;height:100px;margin:47px 0 0 0;border-bottom:2px solid #2A2A2A }
+.cntHeader .title{ float:left;font-size:35px;color:#2A2A2A;font-weight:bold }
+.cntBody{ float:left;width:100% }
+.tblWrap{ float:left;width:100%; margin-bottom:50px; position:relative}
+.tblWrap table{ float:left;width:100%; margin-bottom: 50px;}
+.tblWrap table.reply{ border-top:1px solid #EF6161;margin:3px 0 30px 0 }
+
+/* LIST */
+.tblWrap table.tbl_list thead tr th{ height:57px;font-size:15px;text-align:center;background:#F7F7F7;border-bottom:1px solid #C1C5CD;border-right:1px solid #E1E1E1 }
+.tblWrap table.tbl_list tbody tr td{ padding:12px 10px;height:49px;font-size:13px;border-bottom:1px solid #E1E1E1;border-right:1px solid #E1E1E1;text-align:center }
+.tblWrap table.tbl_list thead tr th:last-child, .tblWrap table tbody tr td:last-child{ border-right:0 }
+.tblWrap table.tbl_list tbody tr:hover td, .tblWrap table tbody tr:focus td{ background:#F5F8FD }
+.tblWrap table.tbl_list tbody tr td.titleList{ text-align:left;overflow:hidden;padding:12px 10px 12px 22px }
+.tblWrap table.tbl_list tbody tr td.titleList a{ color:#000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block }
+.tblWrap table.tbl_list tbody tr td.titleList a:hover, .tblWrap table tbody tr td.titleList a:focus{ text-decoration:underline }
+.tblWrap table.tbl_list tbody tr td.titleList.detachFile{ background-image:url(../images/yeartax_help/icon_file.png);background-repeat:no-repeat;background-position:8px center }
+
+.tblWrap table.tbl_list.qna tbody tr td .ellipsis{ float:left;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block }
+.tblWrap table.tbl_list.qna tbody tr td .ellipsis.type1{ width:123px } 	/* 질문 구분 */
+.tblWrap table.tbl_list.qna tbody tr td .ellipsis.type2{ width:80px } 	/* 작성자 */
+
+.tblWrap table.tbl_list tbody tr td .btnChecking{ display:inline-block;cursor:pointer;width:62px;padding:4px 2px 5px 3px;font-size:13px;font-weight:bold;background-color:#417FEC;color:#FFF;border-radius:3px }
+.tblWrap table.tbl_list tbody tr td .btnChecking.cancel{ background-color:#EC4169 }
+.tblWrap table.tbl_list tbody tr td .btnChecking.complete{ background-color:#808080 }
+.tblWrap table.tbl_list tbody tr td .btnChecking:hover, .tblWrap table.tbl_list tbody tr td .btnChecking:focus{ background-color:#1D5FD4 }
+.tblWrap table.tbl_list tbody tr td .btnChecking.cancel:hover, .tblWrap table.tbl_list tbody tr td .btnChecking.cancel:focus{ background-color:#F31C4E }
+
+/* LIST : Q&A */
+.tblWrap table.tbl_list.qna tbody tr td.titleList a{ width:370px }
+.tblWrap table.tbl_list.qna .col_1{ width:35px } 	/* No. */
+.tblWrap table.tbl_list.qna .col_2{ width:67px } 	/* 정산년도 */
+.tblWrap table.tbl_list.qna .col_3{ width:110px } 	/* 업무구분 */
+.tblWrap table.tbl_list.qna .col_4{ width:175px }	/* 질문구분 */
+.tblWrap table.tbl_list.qna .col_5{ width:403px } 	/* 제목 */
+.tblWrap table.tbl_list.qna .col_6{ width:53px } 	/* 조회수 */
+.tblWrap table.tbl_list.qna .col_7{ width:120px } 	/* 작성자 */
+.tblWrap table.tbl_list.qna .col_8{ width:97px } 	/* 작성일시 */
+.tblWrap table.tbl_list.qna .col_9{ width:100px } 	/* 진행상태 */
+
+
+/* LIST : 공지사항 */
+.tblWrap table.tbl_list.notice tbody tr td.titleList a{ width:470px }
+.tblWrap table.tbl_list.notice .col_1{ width:35px } 	/* No. */
+.tblWrap table.tbl_list.notice .col_2{ width:67px } 	/* 정산년도 */
+.tblWrap table.tbl_list.notice .col_3{ width:110px } 	/* 업무구분 */
+.tblWrap table.tbl_list.notice .col_4{ width:175px }	/* 질문구분 */
+.tblWrap table.tbl_list.notice .col_5{ width:503px } 	/* 제목 */
+.tblWrap table.tbl_list.notice .col_6{ width:53px } 	/* 조회수 */
+.tblWrap table.tbl_list.notice .col_7{ width:120px } 	/* 작성자 */
+.tblWrap table.tbl_list.notice .col_8{ width:97px } 	/* 작성일시 */
+
+/* LIST : 질문 내역 LIST  */
+.tblWrap table.tbl_list.mng tbody tr td{ padding:12px 3px }
+.tblWrap table.tbl_list.mng tbody tr td.subjectData{ padding:12px 3px 12px 8px }
+.tblWrap table.tbl_list.mng tbody tr td.subjectData .subject{ float:left;width:338px;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block }
+.tblWrap table.tbl_list.mng tbody tr td.subjectData:hover, 
+.tblWrap table.tbl_list.mng tbody tr td.subjectData:focus{ cursor:pointer }
+.tblWrap table.tbl_list.mng tbody tr td.subjectData:hover .subject,
+.tblWrap table.tbl_list.mng tbody tr td.subjectData:focus .subject{ text-decoration:underline }
+.tblWrap table.tbl_list.mng tbody tr td .ellipsis{ float:left;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block }
+.tblWrap table.tbl_list.mng tbody tr td .ellipsis.type1{ width:101px } 	/* 고객사 */
+.tblWrap table.tbl_list.mng tbody tr td .ellipsis.type2{ width:70px } 	/* 작성자 */
+.tblWrap table.tbl_list.mng tbody tr td .ellipsis.type3{ width:123px } 	/* 질문 구분 */
+.tblWrap table.tbl_list.mng tbody tr td.titleList a{ width:300px }
+.tblWrap table.tbl_list.mng tbody tr td.titleLimit{ text-align:center;overflow:hidden }
+.tblWrap table.tbl_list.mng tbody tr td.titleLimit .customer{ width:103px;color:#000;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block }
+.tblWrap table.tbl_list.mng .col_1{ width:29px }
+.tblWrap table.tbl_list.mng .col_2{ width:65px } 	/* 정산 년도 */
+.tblWrap table.tbl_list.mng .col_3{ width:85px } 	/* 업무구분 */
+.tblWrap table.tbl_list.mng .col_4{ width:131px } 	/* 질문 구분 */
+.tblWrap table.tbl_list.mng .col_5{ width:350px } 	/* 제목 */
+.tblWrap table.tbl_list.mng .col_6{ width:108px } 	/* 거래처 구분 */
+.tblWrap table.tbl_list.mng .col_7{ width:78px } 	/* 작성자 */
+.tblWrap table.tbl_list.mng .col_8{ width:95px } 	/* 작성일시 */
+.tblWrap table.tbl_list.mng .col_9{ width:74px } 	/* 문의방법 */
+.tblWrap table.tbl_list.mng .col_10{ width:75px } 	/* 진행상태 */
+.tblWrap table.tbl_list.mng .col_11{ width:70px }
+
+/* LIST : 회원 관리 LIST  */
+.tblWrap table.tbl_list.memList tbody tr td select{ display:block;height:30px;font-size:13px }
+.tblWrap table.tbl_list.memList .col_1{ width:50px }
+.tblWrap table.tbl_list.memList .col_2{ width:264px } 		/* 고객사 */
+.tblWrap table.tbl_list.memList .col_3{ width:264px } 		/* 사업장 */
+.tblWrap table.tbl_list.memList .col_4{ width:141px } 		/* 이름	 */
+.tblWrap table.tbl_list.memList .col_5{ width:141px } 		/* 부서 */
+.tblWrap table.tbl_list.memList .col_6{ width:150px } 		/* 사용여부 */
+.tblWrap table.tbl_list.memList .col_7{ width:150px }
+
+/* LIST : 게시판관리 */
+.tblWrap table.tbl_list.mngBoardList tbody tr td.titleList a{ width:451px }
+.tblWrap table.tbl_list.mngBoardList .col_1{ width:48px }
+.tblWrap table.tbl_list.mngBoardList .col_2{ width:414px } 	/* 게시판이름 */
+.tblWrap table.tbl_list.mngBoardList .col_3{ width:414px } 	/* 게시판유형 */
+.tblWrap table.tbl_list.mngBoardList .col_4{ width:141px } 	/* 게시판사용여부 */
+.tblWrap table.tbl_list.mngBoardList .col_5{ width:140px }
+
+/* FORM : 회원 관리 LIST - DIALOG FORM   */
+.tblMemberForm_dialog{ float:left;width:100%;padding:0 0 20px 0; height:600px; }
+.tblMemberForm_dialog .mFormHeader{ float:left;width:100%;height:38px;margin:12px 0 0 0;border-bottom:2px solid #2A2A2A; }
+.tblMemberForm_dialog .mFormHeader .title{ float:left;font-size:20px;color:#2A2A2A;font-weight:bold;margin:0 0 0 15px }
+.tblMemberForm_dialog table{ float:left;width:100%;margin:0 0 15px 0 }
+.tblMemberForm_dialog table tr th{ width:200px;height:30px;font-size:14px;text-align:center;padding:0 20px 0 0;border-bottom:1px solid #E1E1E1;border-right:1px solid #E1E1E1 }
+.tblMemberForm_dialog table tr td{ width:596px;height:40px;border-bottom:1px solid #E1E1E1;padding:5px 0 5px 10px } 
+.tblMemberForm_dialog table tr td select{ float:left;width:140px;height:30px;font-size:14px;border:1px solid #D0D0D0;margin:0 5px 0 0 }
+.tblMemberForm_dialog table tr td select.email_Addr{ width:120px }
+.tblMemberForm_dialog table input[type=text],
+.tblMemberForm_dialog table input[type=password]{ float:left;width:200px;height:30px;border:1px solid #E6E6E6;margin:0 5px 0 0 }
+.tblMemberForm_dialog table input[type=text].num{ width:86px;text-align:center;padding:0 0 2px 0  }
+.tblMemberForm_dialog table .term{ float:left;padding:3px 0 0 0;margin:0 8px 0 4px;font-size:15px;font-weight:bold; }
+.tblMemberForm_dialog .btnCheck_item{ float:left;width:76px;height:30px;color:#FFF;font-weight:bold;border:1px solid #2B7FEB;text-align:center;padding:5px 0 0 0;background:#3489F7 }
+.tblMemberForm_dialog .btnCheck_item:hover, .tblMemberForm_dialog .btnCheck_item:focus{ background:#0061DE;border:1px solid #0051BB;cursor:pointer }
+.checking_Result{ display:none;height:30px;float:left;font-size:12px;font-weight:bold;margin:0 0 0 5px;padding:9px 0 0 0 }
+.checking_Result.true{ color:#2B7FEB }
+.checking_Result.false{ color:#FF0000 }
+.btnFormSubmit{ float:left; width:100%;height:40px;font-size:14px;font-weight:bold;padding:9px 0 0 13px;border-radius:3px;text-align:center;background:#EFF0F2;cursor:pointer }
+.btnFormSubmit:hover, .btnFormSubmit:focus{ background:#D4D4D4 }
+.checking_Result02{ height:30px;float:left;font-size:12px;font-weight:bold;margin:0 0 0 5px;padding:9px 0 0 0;color: #FF0000; }
+
+/* Q&A 상세정보 */
+table.qnaDetail tr th{ padding:10px 0;text-align:center }
+table.qnaDetail tr td{ border-right:1px solid #E1E1E1 }
+table.qnaDetail tr td:last-child{ border-right:0 }
+table.qnaDetail tr:nth-child(even) th, table.qnaDetail tr:nth-child(even) td{ background:#FFFFF5 }
+table.qnaDetail .col_1{ width:68px }
+table.qnaDetail .col_2{ width:99px }
+table.qnaDetail .col_3{ width:200px }
+
+/* WRITE */
+.tblWrap table.tbl_write tr th{ width:200px;background:#FBFBFB;border-bottom:1px solid #E6E6E6;height:57px;font-size:14px;text-align:center;padding:0 15px; }
+.tblWrap table.tbl_write tr td{ /*width:380px;*/padding:0 0 0 10px;border-bottom:1px solid #E6E6E6 }
+.tblWrap table.tbl_write tr td.inFileCase{ padding:5px 0 5px 10px }
+.tblWrap table.tbl_write tr td select{ float:left;width:304px;height:40px;font-size:14px;border:1px solid #D0D0D0 }
+.tblWrap table.tbl_write input[type=text].form_write{ float:left;width:884px;height:40px;border:1px solid #D0D0D0;font-size:14px }
+.tblWrap table.tbl_write tr td.textarea{ height:415px }
+.tblWrap table.tbl_write tr td.textarea .write_textarea{ float:left;width:884px;height:350px;border:1px solid #D0D0D0;font-size:14px;padding:10px }
+.fileBox{ float:left;width:885px;height:40px;margin:0 0 5px 0 }
+.fileBox input[type=file]{ float:left;width:832px;height:40px;font-size:13px;border:1px solid #D0D0D0;padding:8px 0 0 6px;background:#FFF }
+.fileBox .btnFileDel{ float:left;width:48px;height:40px;margin:0 0 0 5px;text-align:center;font-weight:bold;font-size:13px;padding:0;border:1px solid #D0D0D0;background:#FFF }
+.fileBox .btnFileDel:hover, .fileBox .btnFileDel:focus{ border:1px solid #5D7CFE;color:#4E6DF1;cursor:pointer }
+.fileBox .memo{ float:left;font-size:12px;color:#585757 } 
+.filename{ float:left;width:100%;/*border-bottom:1px solid #EEE;*/font-size:13px;margin:9px 0 0 0;padding:0 0 8px 18px;position:relative }
+.filename:before{ position:absolute;content:'';width:4px;height:2px;background:#FF0000;left:5px;top:8px }
+.filename a{ color:#323232 }
+.filename a:hover, .filename a:focus{ text-decoration:underline }
+.filename:last-child{ border-bottom:0 }
+.savedFileList{ float:left;width:885px }
+.del_savedFile{ float:left;width:54px;height:20px;font-size:12px;font-weight:bold;border:1px solid #D0D0D0;background:#FFF;color:#747474;padding:0 0 0 20px;margin:0 0 0 10px;position:relative }
+.del_savedFile:before{ position:absolute;content:'';left:6px;top:3px;width:11px;height:12px;background:url(../images/yeartax_help/img_trash.png) no-repeat 0 0 }
+.del_savedFile:hover, .del_savedFile:focus{ border:1px solid #888585;color:#333333;cursor:pointer }
+.del_savedFile:hover:before, .del_savedFile:focus:before{ background:url(../images/yeartax_help/img_trash.png) no-repeat 0 -35px }
+
+/* REPLY */
+.tblWrap table.tbl_reply tr th{ width:200px;height:57px;font-size:16px;text-align:center;padding:0 15px; }
+.tblWrap table.tbl_reply tr td{ width:380px }
+.tblWrap table.tbl_reply tr.view th{ width:200px;height:34px;font-size:14px;text-align:center;padding:0 15px; }
+.tblWrap table.tbl_reply tr.view td{ width:380px;font-size:14px;border-bottom:1px solid #E8E8E8 }
+.tblWrap table.tbl_reply tr td select{ float:left;width:304px;height:40px;font-size:14px;border:1px solid #D0D0D0 }
+.tblWrap table.tbl_reply input[type=text].form_write{ float:left;width:884px;height:40px;border:1px solid #D0D0D0;font-size:14px }
+.tblWrap table.tbl_reply tr td.textarea.question{ height:200px }
+.tblWrap table.tbl_reply tr td.textarea.answer{ height:364px }
+.tblWrap table.tbl_reply tr td.textarea .write_textarea{ float:left;width:884px;border:1px solid #D0D0D0;font-size:14px;padding:10px }
+.tblWrap table.tbl_reply tr td.textarea.question .write_textarea{ height:200px }
+.tblWrap table.tbl_reply tr td.textarea.answer .write_textarea{ height:350px }
+
+/* view */
+.tblWrap table.tbl_view tr th{ width:200px;height:34px;background:#FBFBFB;font-size:14px;text-align:center;padding:0 15px;border-top: 1px solid #e8e8e8 }
+.tblWrap table.tbl_view tr td{ font-size:14px;border-top: 1px solid #e8e8e8;border-bottom: 1px solid #e8e8e8;padding:0 0 0 10px }
+.tblWrap table.tbl_view tr td.title{  height:86px;font-size:22px;font-weight:bold;padding:0 0 0 110px; }
+.tblWrap table.tbl_view tr td.textarea{height:364px;min-height:364px;padding:10px;vertical-align:top }
+.tblWrap table.tbl_view tr th.th_A{ background:#f7fef1 }
+.tblWrap table.tbl_view tr .th_a_bg{background:#f7fef1 }
+.tblWrap table.tbl_view.reply tr td.title{ background:url(../images/yeartax_help/icon_reply_g.png) no-repeat 55px 25px;border-bottom:1px solid #a2f091 }
+.tblWrap table.tbl_view.question tr td.title{ background:url(../images/yeartax_help/icon_question.png) no-repeat 55px 35px }
+.tblWrap .tbl_view {border-bottom:1px solid #e8e8e8 }
+.tblWrap table.tbl_view.reply tr th.th_A,
+.tblWrap table.tbl_view.reply tr td.textarea{ border-bottom:1px solid #a2f091 }
+.tblWrap table.tbl_view.reply .th_a_line{border-bottom:1px solid #a2f091; }
+.reply {border-bottom:1px solid #a2f091; }
+
+/* buttons */
+.tblBtnArea{ float:left;width:100%;margin:40px 0 0 0 }
+
+.tblBtnArea.writeForm{ width:100%;margin:0 0 0 0; /*padding:20px 0 30px 201px*/ position:relative}
+.tblBtnArea.writeForm .btnWriteBasic{ float:left;width:80px;height:35px;font-size:14px;font-weight:bold;padding:8px 0 0 20px;border-radius:5px;text-align:center;background:#EFF0F2;cursor:pointer }
+.tblBtnArea.writeForm .btnWriteBasic:hover, .tblBtnArea.writeForm .btnWriteBasic:focus{ opacity:0.8; }
+.tblBtnArea.writeForm .btnWriteBasic:first-child{ margin:0 4px 0 0 }
+.tblBtnArea.writeForm .saveBtn{position:absolute;top:0;right:280px;background:url(../images/yeartax_help/icon1_save.png) no-repeat 18% 50% #508CF7; color:#fff;}
+.tblBtnArea.writeForm .cancelBtn{position:absolute;right:200px;background:url(../images/yeartax_help/icon2_cancel.png) no-repeat 18% 50% #cacaca;}
+.tblBtnArea.writeForm .saveBtn2{position:absolute;top:-50px;right:20px;background:url(../images/yeartax_help/icon1_save.png) no-repeat 18% 50% #14C753; color:#fff;}
+.tblBtnArea.writeForm .cancelBtn2{position:absolute;right:200px;background:url(../images/yeartax_help/icon2_cancel.png) no-repeat 18% 50% #cacaca;}
+.nomalbtnWrap {clear:both;width:100%; height:50px;}
+.nomalbtnWrap .nomalBtn{width:350px; height:50px; float:left; border-radius:5px; text-align:center;margin:3% 2%;}
+
+.btBasic_search{width:120px;height:35px; position: absolute; right:230px;top:40px;text-align:center; line-height:32px;border-radius:3px;border:2px solid #508CF7;box-sizing:borer-box;color:#1746cf;font-weight:bold;}
+.btBasic_search:hover, .btBasic_search:focus{ transition:0.2s; cursor:pointer; background:#eee; color:#333; border:2px solid #ccc;}
+.btnBasic1{width:120px;height:35px; position: absolute;right: 360px;top: 40px;font-size:14px;font-weight:bold;padding:7px 0 0 13px;margin: 0 10px 15px 10px;border-radius:3px;text-align:center;color:#fff;border:2px solid #508CF7;background:url(../images/yeartax_help/icon_write_w.png) no-repeat 17px 11px #508CF7;cursor:pointer }
+.btnBasic{width:120px;height:35px;font-size:14px;font-weight:bold;padding:7px 0 0 13px;margin: 0 10px 15px 10px;border-radius:3px;text-align:center;color:#333;background:url(../images/yeartax_help/icon_write_w.png) no-repeat 17px 11px #508CF7;cursor:pointer }
+.btnBasic1:hover, .btnBasic1:focus{background:url(../images/yeartax_help/icon_write.png) no-repeat 17px 11px #fff; border:2px solid #508CF7;box-sizing:borer-box;color:#1746cf; }
+.btnBasic:hover, .btnBasic:focus{  color:#333; transition:0.2s;}	
+.btnBasic.list{ float:left;padding:7px 0 0 0;background:#EFF0F2 }	
+.btnBasic.edit{ float:right;padding:7px 0 0 0;background:#EFF0F2 }	
+.btnBasic.del{ float:right;padding:7px 0 0 0;background:#efefef;margin:0 0 0 5px }
+.btnBasic.edit{ float:right;padding:7px 0 0 0;background:#14c753;margin:0 0 0 5px }
+
+.btnBasic.reply{ float:right;padding:7px 0 0 0;background:#EFF0F2;margin:0 0 0 5px }	
+.btnBasic.list:hover, .btnBasic.list:focus,
+.btnBasic.edit:hover, .btnBasic.edit:focus,
+.btnBasic.del:hover, .btnBasic.del:focus,
+.btnBasic.reply:hover, .btnBasic.reply:focus{ background:#D4D4D4 }
+
+
+.tblBtnTop{width: 100%;position: relative;}
+
+.searchIcon {display:inline-block; width:30px; height:30px; margin-top:2%; cursor:pointer; background:url(../images/yeartax_help/icon.png)no-repeat; background-size:cover;}
+.searchIcon:hover{transition:0.5s; transform:rotate(360deg); }
+
+/* FAQ LIST */
+.faqWrap{ float:left;width:100% }
+.faq_item{ float:left;width:100%;border-bottom:1px solid #F1F1F1 }
+.faq_item .btn_faq{ float:left;width:100%;padding:17px 30px 19px 0 }
+.faq_item .btn_faq .txt_cat{ float:left;padding-right:6px;color:#2282F9;font-size:16px }
+.faq_item .btn_faq .faq_TitleBox{ float:left;width:988px;font-size:16px;color:#383D48 }
+.faq_item .btn_faq .bg_cs_open{ float:right;width:11px;height:6px;background-image:url(../images/yeartax_help/open_cs_in_faq.png);background-repeat:no-repeat;background-position:0 0;margin:12px 10px 0 0 }
+.faq_item .btn_faq:hover .faq_TitleBox, .faq_item .btn_faq:focus .faq_TitleBox{ color:#2282F9;cursor:pointer;text-decoration:underline }
+.faq_item .btn_faq:hover .bg_cs_open, .faq_item .btn_faq:focus .bg_cs_open{ background-position:0 -10px;cursor:pointer }
+
+/* display:none; */
+.faq_item.on .faq_view{ display:block }
+.faq_item.on .btn_faq{ display:none }
+.faq_item .faq_view{ display:none;float:left;width:100%;padding-bottom:60px;border-top:1px solid #C3C4C8;border-bottom:1px solid #C3C4C8;margin-bottom:-1px;margin-top:-1px }
+.faq_item .faq_view .tit_faq{ float:left;width:1064px;padding:47px 0 48px 0;margin:0 0 35px 0;font-weight:normal;font-size:28px;color:#2282F9;border-bottom:1px solid #E6E9EC }
+.faq_item .faq_view .desc_faq{ float:left;width:90%;font-size:16px;line-height: 1.875 }
+.faq_item .faq_view .bg_cs_close{ float:right;width:21px;height:20px;margin:60px 33px 0 0;background-image:url(../images/yeartax_help/btn_close_in_faq.png);background-repeat:no-repeat;background-position:5px 5px }
+.faq_item .faq_view .bg_cs_close:hover, .faq_item .faq_view .bg_cs_close:focus{ background-position:5px -10px;cursor:pointer }
+.faq_item .faq_view .btnWrap{ float:left;width:100%;padding:0 40px 0 0 }
+.faq_item .faq_view .btnWrap button{ float:right;border:1px solid #DDD;background:#F7F6F6;font-size:13px;padding:4px 8px 3px 8px;margin:0 0 0 5px;cursor:pointer }
+.faq_item .faq_view .btnWrap button:hover, .faq_item .faq_view .btnWrap button:focus{ background:#E2E2E2 }
+
+/* PAGINATE */
+.page_Container{ float:left;width:100%;text-align:center; margin-top:30px; }
+.paginate{display:inline-block;position:relative;height:30px;text-align:center;margin:20px 0}
+.paginate a{ float:left;width:26px;height:24px;text-align:center;line-height:22px;background-image:url(../images/yeartax_help/paginate.png);background-repeat:no-repeat;font-size:12px;font-weight:bold }
+.paginate .prevEnd, .paginate .num, .paginate .prevEnd:focus, .paginate .prevEnd:hover,
+.paginate .num_current, .paginate .num:hover, .paginate .num:focus,
+.paginate .num_current:hover, .paginate .num_current:focus { margin-right:4px }
+.paginate .prev, .paginate .prev:focus, .paginate .prev:hover{ margin-right:10px }
+.paginate .next, .paginate .next:focus, .paginate .next:hover { margin:0 4px 0 6px }
+.paginate .prevEnd{ background-position:0 0 }
+.paginate .prev{ background-position:-30px -0 }
+.paginate .prevEnd:focus, .paginate .prevEnd:hover{ background-position:0px -25px }
+.paginate .prev:focus, .paginate .prev:hover{ background-position:-30px -25px }
+.paginate .num{ color:#A3A3A3;background-position:-89px 0 }
+.paginate .num_current{ color:#FFF;background-position:-59px 0 }
+.paginate .num:hover, .paginate .num:focus{ color:#A3A3A3;background-position:-89px -25px }
+.paginate .num_current:hover, .paginate .num_current:focus{ color:#FFF;background-position:-59px -25px }
+.paginate .next{ background-position:-119px 0 }
+.paginate .nextEnd{ background-position:-149px 0 }
+.paginate .next:focus, .paginate .next:hover{ background-position:-119px -25px }
+.paginate .nextEnd:focus, .paginate .nextEnd:hover{ background-position:-149px -25px }
+
+
+.answerWrap {margin-top:30px}
+.answerHead {font-size:30px; font-weight:bold; border-bottom:3px solid #14c753; padding-bottom:10px;}
+
+
+.lstPotinter{
+	cursor: pointer;
+	
+}
+.lstPotinter:hover {
+	color : #ffc045;
+	text-decoration: underline;
+}
+
+/*  게시글 버튼s   */
+.btnWrap{ width:52%;position:absolute; bottom:8%; right:0;}
+.btnWrap2{ width:10%;position:absolute; bottom:0; right:0;}
+.btnWrap3{ width:10%;position:absolute; bottom:-20px; right:0;}
+.btnWrap div, .btnWrap2 div, .btnWrap3 div {width:120px; height:35px; margin-right:2%;float:left; cursor:pointer; border-radius:5px;}
+.btnWrap div:hover{opacity:0.8;}
+.btnWrap2 div:hover{opacity:0.8;}
+.btnWrap3 div:hover{opacity:0.8;}
+
+.btn01{background:url(../images/yeartax_help/btn01.png)no-repeat center #efefef;}
+.btn02{background:url(../images/yeartax_help/btn02.png)no-repeat center #efefef;}
+.btn03{background:url(../images/yeartax_help/btn03.png)no-repeat center #efefef;}
+.btn04{background:url(../images/yeartax_help/btn04.png)no-repeat center #efefef;}
+.btn05{background:url(../images/yeartax_help/btn05.png)no-repeat center #efefef;}
+
+
+
